@@ -1,0 +1,3487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1F3864">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LessonCraft">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>LessonCraft v2.0</title>
+<script>
+// Load docx library with fallback CDN
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://unpkg.com/docx@8.5.0/build/index.umd.js';
+  s.onerror = function() {
+    var s2 = document.createElement('script');
+    s2.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s);
+})();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #1F3864;
+  --steel:  #2E5F8A;
+  --sky:    #4A90C4;
+  --light:  #D9E2F3;
+  --pale:   #F0F4FB;
+  --gold:   #C49A28;
+  --white:  #FFFFFF;
+  --ink:    #1A2233;
+  --muted:  #6B7A96;
+  --border: #C8D4E8;
+  --green:  #2D7D52;
+  --red:    #C0392B;
+  --bg:     #F5F7FB;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+/* HEADER */
+.app-header { background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(31,56,100,0.25); }
+.header-inner { max-width: 1100px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: nowrap; }
+.header-brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex-shrink: 1; overflow: hidden; }
+.header-icon { width: 36px; height: 36px; background: var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.header-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-sub { font-size: 11px; color: #7A9CC8; margin-top: 1px; white-space: nowrap; }
+.header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+/* Mobile panel — full-width strip below header */
+.mob-panel { display: none; background: #162d52; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+.mob-panel.open { display: flex; }
+.mob-panel-btn { display: flex; align-items: center; gap: 7px; padding: 9px 14px; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+.mob-panel-btn:hover { background: rgba(255,255,255,0.18); }
+.mob-panel-btn.danger { color: #f8a4a4; border-color: rgba(248,164,164,0.3); }
+body.dark .mob-panel { background: #070f1a; }
+.version-badge { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.14); padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
+.progress-bar-wrap { background: rgba(0,0,0,0.2); height: 3px; }
+.progress-bar-fill { height: 100%; background: var(--gold); transition: width 0.4s ease; width: 0%; }
+
+/* LAYOUT */
+.app-body { max-width: 1100px; margin: 0 auto; padding: 28px 28px 80px; display: grid; grid-template-columns: 210px 1fr; gap: 24px; align-items: start; }
+
+/* SIDEBAR */
+.sidebar { position: sticky; top: 72px; background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 12px rgba(31,56,100,0.07); }
+.sidebar-label { padding: 12px 14px 8px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; border-left: 3px solid transparent; font-size: 13px; color: var(--muted); text-decoration: none; border-bottom: 1px solid #F0F2F7; transition: background 0.15s, color 0.15s; }
+.nav-item:last-child { border-bottom: none; }
+.nav-item:hover { background: var(--pale); color: var(--steel); }
+.nav-item.active { background: var(--pale); color: var(--navy); border-left-color: var(--gold); font-weight: 600; }
+.nav-item.done { color: var(--green); }
+.nav-num { width: 18px; height: 18px; background: var(--light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--steel); flex-shrink: 0; }
+.nav-item.active .nav-num { background: var(--navy); color: var(--white); }
+.nav-check { font-size: 10px; margin-left: auto; opacity: 0; }
+.nav-item.done .nav-check { opacity: 1; }
+
+/* MAIN */
+.main-content { display: flex; flex-direction: column; gap: 20px; }
+
+/* COMPLETION STRIP */
+.completion-strip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 6px rgba(31,56,100,0.06); }
+.completion-label { font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap; }
+.completion-track { flex: 1; height: 8px; background: var(--light); border-radius: 4px; overflow: hidden; }
+.completion-fill { height: 100%; background: linear-gradient(90deg, var(--steel), var(--gold)); border-radius: 4px; transition: width 0.5s ease; }
+.completion-pct { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--steel); white-space: nowrap; min-width: 36px; text-align: right; }
+
+/* SECTION CARD */
+.section-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 12px rgba(31,56,100,0.06); scroll-margin-top: 80px; }
+.section-head { background: var(--navy); padding: 14px 22px; display: flex; align-items: center; gap: 12px; }
+.section-head-num { width: 26px; height: 26px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--white); flex-shrink: 0; }
+.section-head h2 { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--white); }
+.section-head p { font-size: 11px; color: #7A9CC8; margin-top: 2px; }
+.section-body { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+
+/* FIELDS */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-row { display: grid; gap: 14px; }
+.field-row.cols-2 { grid-template-columns: 1fr 1fr; }
+.field-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.field-label { font-size: 11px; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: 0.07em; }
+.required { color: var(--gold); }
+.field-hint { font-size: 12px; color: var(--muted); font-style: italic; background: var(--pale); border-left: 3px solid var(--sky); padding: 7px 11px; border-radius: 0 6px 6px 0; line-height: 1.5; }
+input[type="text"], input[type="date"], select, textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: var(--ink); background: var(--white); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+input:focus, select:focus, textarea:focus { border-color: var(--steel); box-shadow: 0 0 0 3px rgba(46,95,138,0.12); }
+textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+textarea.tall { min-height: 130px; }
+textarea.short { min-height: 60px; }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7A96' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; }
+hr.divider { border: none; border-top: 1.5px solid var(--border); }
+
+/* REPEATER */
+.repeater { display: flex; flex-direction: column; gap: 6px; }
+.repeater-item { display: flex; gap: 6px; align-items: flex-start; }
+.repeater-item input, .repeater-item textarea { flex: 1; }
+.repeater-bullet { width: 26px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--steel); font-size: 16px; flex-shrink: 0; }
+.btn-remove { width: 30px; height: 30px; border: 1.5px solid #E0C8C8; background: #FDF5F5; color: var(--red); border-radius: 6px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 3px; transition: background 0.15s; }
+.btn-remove:hover { background: #FAE8E8; }
+.btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 1.5px dashed var(--sky); background: transparent; color: var(--steel); border-radius: 7px; cursor: pointer; font-size: 13px; font-family: 'Source Sans 3', sans-serif; transition: background 0.15s; margin-top: 4px; }
+.btn-add:hover { background: var(--pale); border-color: var(--steel); }
+
+/* PHASE */
+.phase-header { background: var(--steel); color: var(--white); padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.phase-badge { background: rgba(255,255,255,0.18); padding: 2px 9px; border-radius: 10px; font-size: 11px; font-family: 'DM Mono', monospace; }
+
+/* ACTIVITY BLOCK */
+.activity-block { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+.activity-block-head { background: var(--pale); padding: 10px 16px; border-bottom: 1.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.activity-tag { background: var(--steel); color: var(--white); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 8px; border-radius: 4px; font-family: 'DM Mono', monospace; }
+.activity-block-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+/* BUTTONS */
+.btn { padding: 9px 20px; border-radius: 8px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 7px; transition: all 0.18s; }
+.btn-primary { background: var(--navy); color: var(--white); box-shadow: 0 2px 8px rgba(31,56,100,0.2); }
+.btn-primary:hover { background: var(--steel); }
+.btn-secondary { background: var(--white); color: var(--navy); border: 1.5px solid var(--border); }
+.btn-secondary:hover { background: var(--pale); border-color: var(--steel); }
+.btn-gold { background: var(--gold); color: var(--white); box-shadow: 0 2px 8px rgba(196,154,40,0.3); }
+.btn-gold:hover { background: #B08820; }
+.btn-header { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 7px 13px; border-radius: 6px; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; transition: background 0.15s; }
+.btn-header:hover { background: rgba(255,255,255,0.22); }
+
+/* GENERATE CARD */
+.generate-card { background: linear-gradient(135deg, var(--navy) 0%, #2A4A80 100%); border-radius: 12px; padding: 26px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 4px 20px rgba(31,56,100,0.2); }
+.generate-card h3 { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--white); margin-bottom: 5px; }
+.generate-card p { font-size: 13px; color: #7A9CC8; max-width: 400px; line-height: 1.5; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--navy); color: var(--white); padding: 11px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; box-shadow: 0 8px 24px rgba(31,56,100,0.3); transform: translateY(70px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 200; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* SAVE DIALOG */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; align-items: center; justify-content: center; }
+.dialog-overlay.open { display: flex; }
+.dialog-box { background: var(--white); border-radius: 12px; padding: 24px; width: 320px; max-width: 90vw; box-shadow: 0 8px 32px rgba(31,56,100,0.25); }
+.dialog-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 12px; }
+.dialog-box input { width: 100%; margin-bottom: 14px; }
+.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* LEARNING SKILLS CHECKBOXES */
+.skill-col label.field-label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.skill-col input[type="checkbox"] { width: auto; cursor: pointer; }
+
+/* DARK MODE */
+body.dark { --navy:#0d1f3c; --steel:#1e3f5a; --light:#1a2a3a; --pale:#1e2d3d; --gold:#C49A28; --white:#e8edf5; --ink:#d4dbe8; --muted:#8a9bb8; --border:#2a3a4a; --bg:#0f1923; }
+body.dark .app-header { background: #070f1a; }
+body.dark .section-card, body.dark .sidebar, body.dark .completion-strip { background: #131e2b; border-color: #1e2d3d; }
+body.dark input, body.dark textarea, body.dark select { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
+body.dark .activity-block { border-color: #1e2d3d; }
+body.dark .activity-block-head { background: #1a2a3a; border-color: #1e2d3d; }
+body.dark .btn-secondary { background: #1a2a3a; color: #d4dbe8; border-color: #2a3a4a; }
+body.dark .dialog-box { background: #131e2b; }
+body.dark .field-hint { background: #1a2a3a; }
+
+/* MOBILE DRAWER */
+.hamburger { display: none; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 36px; height: 36px; border-radius: 6px; font-size: 18px; cursor: pointer; align-items: center; justify-content: center; flex-shrink: 0; }
+.mob-only { display: none; }
+.drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 400; }
+.drawer-overlay.open { display: block; }
+.drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: var(--white); z-index: 410; transform: translateX(-100%); transition: transform 0.26s cubic-bezier(0.4,0,0.2,1); box-shadow: 4px 0 24px rgba(31,56,100,0.18); overflow-y: auto; }
+.drawer.open { transform: translateX(0); }
+.drawer-header { background: var(--navy); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.drawer-title { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); font-weight: 600; }
+.drawer-close { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 30px; height: 30px; border-radius: 6px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+body.dark .drawer { background: #131e2b; }
+
+/* OVERFLOW MENU */
+.overflow-menu-wrap { position: relative; }
+.overflow-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(31,56,100,0.18); min-width: 200px; z-index: 200; overflow: hidden; }
+.overflow-menu.open { display: block; }
+.overflow-item { display: block; width: 100%; padding: 11px 16px; text-align: left; background: none; border: none; font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: var(--ink); cursor: pointer; transition: background 0.12s; }
+.overflow-item:hover { background: var(--pale); }
+.overflow-danger { color: var(--red); }
+.overflow-divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+body.dark .overflow-menu { background: #1a2a3a; border-color: #2a3a4a; }
+body.dark .overflow-item { color: #d4dbe8; }
+body.dark .overflow-item:hover { background: #131e2b; }
+body.dark .overflow-divider { border-color: #2a3a4a; }
+
+/* IMPORT TABS */
+.import-tabs { display: flex; margin-bottom: -1px; }
+.import-tab { flex: 1; padding: 9px; font-size: 13px; font-weight: 600; font-family: 'Source Sans 3', sans-serif; cursor: pointer; background: var(--pale); color: var(--muted); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; transition: all 0.15s; text-align: center; }
+.import-tab:first-child { border-right: none; }
+.import-tab.active { background: var(--white); color: var(--navy); z-index: 1; }
+.import-tab-body { border: 1px solid var(--border); border-radius: 0 0 8px 8px; padding: 16px; margin-bottom: 14px; }
+textarea.paste-area { width: 100%; min-height: 130px; font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.5; resize: vertical; }
+body.dark .import-tab { background: #1a2a3a; color: var(--muted); }
+body.dark .import-tab.active { background: #131e2b; color: var(--gold); }
+body.dark .import-tab-body { background: #131e2b; border-color: #2a3a4a; }
+body.dark textarea.paste-area { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
+
+/* GUIDE PANEL */
+.guide-overlay { display: none; position: fixed; inset: 0; z-index: 500; background: var(--bg); overflow-y: auto; }
+.guide-overlay.open { display: block; }
+.guide-header { background: var(--navy); padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1; box-shadow: 0 2px 12px rgba(31,56,100,0.25); }
+.guide-header-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); font-weight: 700; }
+.guide-close { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 7px 14px; border-radius: 6px; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; }
+.guide-body { max-width: 780px; margin: 0 auto; padding: 36px 28px 60px; }
+.guide-section { margin-bottom: 36px; }
+.guide-section h2 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--navy); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--light); }
+.guide-section h3 { font-size: 13px; font-weight: 700; color: var(--steel); text-transform: uppercase; letter-spacing: 0.07em; margin: 16px 0 6px; }
+.guide-section p { font-size: 14px; line-height: 1.75; color: var(--ink); margin-bottom: 10px; }
+.guide-section ul { padding-left: 20px; margin-bottom: 10px; }
+.guide-section ul li { font-size: 14px; line-height: 1.75; color: var(--ink); margin-bottom: 4px; }
+.guide-tip { background: var(--pale); border-left: 4px solid var(--gold); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 13px; color: var(--ink); margin: 12px 0; line-height: 1.6; }
+.guide-step { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.guide-step-num { width: 28px; height: 28px; background: var(--navy); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.guide-step-body { flex: 1; font-size: 14px; line-height: 1.7; color: var(--ink); }
+.guide-step-body strong { color: var(--navy); }
+.guide-kbd { display: inline-block; background: var(--steel); color: var(--white); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-family: 'DM Mono', monospace; vertical-align: middle; }
+body.dark .guide-overlay { background: #0f1923; }
+body.dark .guide-section h2 { color: #d4dbe8; border-color: #1e2d3d; }
+body.dark .guide-section p, body.dark .guide-section ul li, body.dark .guide-step-body { color: #d4dbe8; }
+body.dark .guide-tip { background: #1a2a3a; color: #d4dbe8; }
+body.dark .guide-step-body strong { color: #d4dbe8; }
+
+/* PROMPT DIALOG */
+.prompt-box { background: var(--pale); border: 1.5px solid var(--border); border-radius: 8px; padding: 14px; font-family: 'DM Mono', monospace; font-size: 11.5px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; max-height: 320px; overflow-y: auto; margin-bottom: 14px; }
+body.dark .prompt-box { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .app-body { grid-template-columns: 1fr; padding: 12px 12px 80px; }
+  .sidebar { display: none; }
+  .hamburger { display: flex; }
+  .mob-only { display: flex !important; }
+  .field-row.cols-2, .field-row.cols-3 { grid-template-columns: 1fr; }
+  .generate-card { flex-direction: column; }
+  .generate-card .btn { width: 100%; justify-content: center; }
+  .version-badge { display: none; }
+  .header-inner { padding: 10px 14px; }
+  .header-title { font-size: 15px; }
+  .header-sub { display: none; }
+  .desk-only { display: none !important; }
+}
+
+/* ─── EDIT LAYOUT OVERLAY ─── */
+.el-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:600; align-items:center; justify-content:center; }
+.el-overlay.open { display:flex; }
+.el-box { background:var(--white); border-radius:14px; width:680px; max-width:96vw; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(31,56,100,0.28); overflow:hidden; }
+.el-header { background:var(--navy); padding:16px 22px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.el-header-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--white); font-weight:700; }
+.el-header-close { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#fff; width:30px; height:30px; border-radius:6px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.el-body { overflow-y:auto; padding:18px; flex:1; }
+.el-row { display:flex; align-items:center; gap:8px; background:var(--white); border:1.5px solid var(--border); border-radius:9px; padding:10px 12px; margin-bottom:8px; cursor:grab; transition:box-shadow 0.15s; }
+.el-row:active { cursor:grabbing; box-shadow:0 4px 16px rgba(31,56,100,0.18); }
+.el-handle { font-size:18px; color:var(--muted); cursor:grab; flex-shrink:0; }
+.el-row-body { flex:1; display:flex; flex-direction:column; gap:5px; min-width:0; }
+.el-title-input { width:100%; border:1px solid var(--border); border-radius:5px; padding:5px 8px; font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:600; color:var(--navy); background:transparent; outline:none; }
+.el-title-input:focus { border-color:var(--steel); background:var(--pale); }
+.el-subtitle-input { width:100%; border:1px solid transparent; border-radius:5px; padding:4px 8px; font-family:'Source Sans 3',sans-serif; font-size:11px; color:var(--muted); background:transparent; outline:none; }
+.el-subtitle-input:focus { border-color:var(--border); background:var(--pale); }
+.el-row-actions { display:flex; gap:4px; align-items:center; flex-shrink:0; }
+.el-btn { width:28px; height:28px; border:1.5px solid var(--border); background:var(--pale); color:var(--ink); border-radius:6px; cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center; transition:background 0.12s; padding:0; }
+.el-btn:hover:not([disabled]) { background:var(--light); border-color:var(--steel); }
+.el-btn[disabled] { opacity:0.3; cursor:default; }
+.el-btn.el-del { color:var(--red); border-color:#E0C8C8; }
+.el-btn.el-del:hover { background:#FAE8E8; }
+.el-builtin-badge { font-size:9px; font-family:'DM Mono',monospace; color:var(--muted); background:var(--light); border:1px solid var(--border); padding:2px 6px; border-radius:4px; white-space:nowrap; }
+.el-footer { padding:14px 18px; border-top:1.5px solid var(--border); display:flex; gap:8px; flex-wrap:wrap; align-items:center; flex-shrink:0; }
+.el-tpl-wrap { display:none; align-items:center; gap:6px; width:100%; margin-top:6px; }
+.el-tpl-wrap input { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:7px; font-size:13px; font-family:'Source Sans 3',sans-serif; color:var(--ink); outline:none; }
+.el-tpl-wrap input:focus { border-color:var(--steel); }
+body.dark .el-box { background:#131e2b; }
+body.dark .el-row { background:#1a2a3a; border-color:#2a3a4a; }
+body.dark .el-title-input, body.dark .el-subtitle-input { color:#d4dbe8; }
+body.dark .el-title-input:focus, body.dark .el-subtitle-input:focus { background:#0f1923; }
+body.dark .el-btn { background:#0f1923; color:#d4dbe8; border-color:#2a3a4a; }
+body.dark .el-btn:hover:not([disabled]) { background:#1a2a3a; }
+body.dark .el-builtin-badge { background:#1a2a3a; color:#8a9bb8; border-color:#2a3a4a; }
+body.dark .el-footer { border-color:#2a3a4a; }
+body.dark .el-tpl-wrap input { background:#0f1923; color:#d4dbe8; border-color:#2a3a4a; }
+
+/* ══════════════════════════════════════════════════════════════
+   THEME EDITOR OVERLAY
+══════════════════════════════════════════════════════════════ */
+#themeOverlay { display:none; position:fixed; inset:0; z-index:600; background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; }
+#themeOverlay.open { display:block; }
+.te-header { position:sticky; top:0; z-index:10; background:var(--navy); padding:14px 18px; display:flex; align-items:center; gap:12px; box-shadow:0 2px 10px rgba(0,0,0,0.2); }
+.te-header-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:#fff; flex:1; }
+.te-header-sub { font-size:11px; color:#7A9CC8; margin-top:1px; }
+.te-body { max-width:600px; margin:0 auto; padding:20px 16px 80px; }
+.te-section { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:16px; }
+.te-section-title { font-family:'Playfair Display',serif; font-size:14px; font-weight:600; color:var(--navy); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.te-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.te-row:last-child { margin-bottom:0; }
+.te-label { font-size:12px; font-weight:600; color:var(--navy); text-transform:uppercase; letter-spacing:0.06em; flex:1; }
+.te-color-wrap { display:flex; align-items:center; gap:8px; }
+.te-color-swatch { width:36px; height:36px; border-radius:8px; border:2px solid var(--border); cursor:pointer; padding:0; -webkit-tap-highlight-color:transparent; overflow:hidden; }
+.te-color-swatch input[type=color] { width:44px; height:44px; border:none; padding:0; margin:-4px; cursor:pointer; background:none; }
+.te-color-hex { font-family:'DM Mono',monospace; font-size:12px; color:var(--ink); border:1.5px solid var(--border); border-radius:6px; padding:6px 10px; width:90px; }
+.te-font-select { flex:1; max-width:240px; }
+.te-preset-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.te-preset-card { border:2px solid var(--border); border-radius:10px; padding:12px; cursor:pointer; transition:border-color 0.15s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+.te-preset-card:hover { border-color:var(--gold); }
+.te-preset-card.active { border-color:var(--gold); background:var(--pale); }
+.te-preset-name { font-weight:600; font-size:13px; color:var(--navy); margin-bottom:6px; }
+.te-preset-swatches { display:flex; gap:4px; }
+.te-preset-dot { width:18px; height:18px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); }
+.te-preview { background:var(--pale); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:16px; }
+.te-preview-title { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; }
+.te-preview-card { background:var(--white); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.te-preview-head { padding:10px 14px; }
+.te-preview-body { padding:12px 14px; }
+.te-preview-field { height:32px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); }
+
+
+/* ══════════════════════════════════════════════════════════════
+   INTERACTIVE WALKTHROUGH
+══════════════════════════════════════════════════════════════ */
+#wtOverlay { display:none; position:fixed; inset:0; z-index:700; pointer-events:none; }
+#wtOverlay.open { display:block; }
+#wtBackdrop { position:absolute; inset:0; background:rgba(0,0,0,0.55); pointer-events:all; }
+#wtTooltip {
+  position:absolute; z-index:10; pointer-events:all;
+  background:var(--white); border-radius:14px; padding:18px 20px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.25); width:300px; max-width:90vw;
+  border:2px solid var(--gold);
+  max-height:60vh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+}
+#wtTooltip.wt-bottom { top:auto; }
+.wt-step-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+.wt-title { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--navy); margin-bottom:8px; }
+.wt-body  { font-size:13px; color:var(--ink); line-height:1.6; margin-bottom:14px; }
+.wt-actions { display:flex; gap:8px; align-items:center; }
+.wt-btn-next { background:var(--navy); color:#fff; border:none; border-radius:7px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; flex:1; }
+.wt-btn-next:hover { background:var(--steel); }
+.wt-btn-skip { background:none; border:none; color:var(--muted); font-size:12px; cursor:pointer; -webkit-tap-highlight-color:transparent; padding:4px 8px; }
+.wt-progress { display:flex; gap:5px; margin-right:auto; }
+.wt-dot { width:7px; height:7px; border-radius:50%; background:var(--border); transition:background 0.2s; }
+.wt-dot.active { background:var(--gold); }
+.wt-dot.done   { background:var(--navy); }
+#wtHighlight {
+  position:absolute; z-index:5; border-radius:10px;
+  box-shadow:0 0 0 4px var(--gold), 0 0 0 9999px rgba(0,0,0,0.01);
+  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+}
+
+/* Updated guide ── tabs */
+.guide-tabs { display:flex; border-bottom:1px solid var(--border); }
+.guide-tab { flex:1; padding:10px 8px; font-size:13px; font-weight:600; text-align:center; cursor:pointer; color:var(--muted); border-bottom:2px solid transparent; background:none; border-top:none; border-left:none; border-right:none; font-family:'Source Sans 3',sans-serif; -webkit-tap-highlight-color:transparent; transition:all 0.15s; }
+.guide-tab.active { color:var(--navy); border-bottom-color:var(--gold); }
+#guideTabRef   { }
+#guideTabWalk  { }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <button class="hamburger" onclick="openDrawer()" title="Navigate sections">☰</button>
+      <div class="header-icon">📋</div>
+      <div>
+        <div class="header-title">LessonCraft</div>
+        <div class="header-sub">Ontario Curriculum — Three-Part Lesson Framework</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="version-badge desk-only">v2.0</span>
+      <!-- Desktop: overflow dropdown -->
+      <div class="overflow-menu-wrap desk-only">
+        <button class="btn-header" onclick="toggleOverflow(event)" title="More options">⋯</button>
+        <div class="overflow-menu" id="overflowMenu">
+          <button class="overflow-item" onclick="openGuide();closeOverflow()">📖 User Guide</button>
+          <button class="overflow-item" onclick="openPromptDialog();closeOverflow()">🤖 AI Interview Prompt</button>
+          <button class="overflow-item" onclick="openImportDialog();closeOverflow()">📂 Import Draft</button>
+          <button class="overflow-item" onclick="toggleDark();closeOverflow()" id="darkItem">🌙 Dark Mode</button>
+          <hr class="overflow-divider">
+          <button class="overflow-item" onclick="openEditLayout()">✏️ Edit Layout</button>
+          <button class="overflow-item" onclick="openThemeEditor()">🎨 Theme Editor</button>
+          <hr class="overflow-divider">
+          <button class="overflow-item overflow-danger" onclick="clearAll();closeOverflow()">🗑 Clear Form</button>
+        </div>
+      </div>
+      <!-- Mobile: panel toggle (hidden on desktop) -->
+      <button class="btn-header mob-only" onclick="toggleMobPanel()" id="mobMenuBtn" title="More options">⋯</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importFromFile(event)">
+      <button class="btn btn-secondary" onclick="saveDraft()">💾 Save</button>
+      <button class="btn btn-gold" onclick="exportDocx()">⬇ Export</button>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+  <!-- Mobile actions panel — opens below header -->
+  <div class="mob-panel" id="mobPanel">
+    <button class="mob-panel-btn" onclick="openGuide();closeMobPanel()">📖 User Guide</button>
+    <button class="mob-panel-btn" onclick="openPromptDialog();closeMobPanel()">🤖 AI Prompt</button>
+    <button class="mob-panel-btn" onclick="openImportDialog();closeMobPanel()">📂 Import</button>
+    <button class="mob-panel-btn" onclick="toggleDark();closeMobPanel()" id="darkItemMob">🌙 Dark Mode</button>
+    <button class="mob-panel-btn" onclick="openEditLayout();closeMobPanel()">✏️ Edit Layout</button>
+    <button class="mob-panel-btn" onclick="openThemeEditor();closeMobPanel()">🎨 Theme Editor</button>
+    <button class="mob-panel-btn danger" onclick="clearAll();closeMobPanel()">🗑 Clear</button>
+  </div>
+</header>
+
+<!-- MOBILE DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">Sections</span>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <a class="nav-item active" href="#s1" onclick="setNav(this);closeDrawer()"><span class="nav-num">1</span> Lesson Info <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s2" onclick="setNav(this);closeDrawer()"><span class="nav-num">2</span> Curriculum <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s3" onclick="setNav(this);closeDrawer()"><span class="nav-num">3</span> Goals & Criteria <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s4" onclick="setNav(this);closeDrawer()"><span class="nav-num">4</span> Achievement Chart <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s5" onclick="setNav(this);closeDrawer()"><span class="nav-num">5</span> Assessment <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s6" onclick="setNav(this);closeDrawer()"><span class="nav-num">6</span> Planning Notes <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s7" onclick="setNav(this);closeDrawer()"><span class="nav-num">7</span> Three-Part Lesson <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s8" onclick="setNav(this);closeDrawer()"><span class="nav-num">8</span> Learning Skills <span class="nav-check">✓</span></a>
+</div>
+
+<div class="app-body">
+
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar">
+    <div class="sidebar-label">Sections</div>
+    <a class="nav-item active" href="#s1" onclick="setNav(this)"><span class="nav-num">1</span> Lesson Info <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s2" onclick="setNav(this)"><span class="nav-num">2</span> Curriculum <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s3" onclick="setNav(this)"><span class="nav-num">3</span> Goals & Criteria <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s4" onclick="setNav(this)"><span class="nav-num">4</span> Achievement Chart <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s5" onclick="setNav(this)"><span class="nav-num">5</span> Assessment <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s6" onclick="setNav(this)"><span class="nav-num">6</span> Planning Notes <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s7" onclick="setNav(this)"><span class="nav-num">7</span> Three-Part Lesson <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s8" onclick="setNav(this)"><span class="nav-num">8</span> Learning Skills <span class="nav-check">✓</span></a>
+  </nav>
+
+  <div class="main-content">
+
+    <!-- PROGRESS -->
+    <div class="completion-strip">
+      <div class="completion-label">Plan Completion</div>
+      <div class="completion-track"><div class="completion-fill" id="completionFill"></div></div>
+      <div class="completion-pct" id="completionPct">0%</div>
+    </div>
+
+    <!-- SECTION CONTAINER (data-driven v2.0) -->
+    <div id="sectionContainer"></div>
+
+    <!-- EXPORT -->
+    <div class="generate-card">
+      <div>
+        <h3>Ready to export your lesson plan?</h3>
+        <p>Exports as a professionally formatted DOCX file — ready to print or submit.</p>
+      </div>
+      <button class="btn btn-gold" onclick="exportDocx()" style="white-space:nowrap;font-size:15px;padding:13px 26px">⬇ Export DOCX</button>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-body -->
+
+
+<!-- EDIT LAYOUT OVERLAY -->
+<div class="el-overlay" id="editLayoutOverlay">
+  <div class="el-box">
+    <div class="el-header">
+      <span class="el-header-title">✏️ Edit Layout</span>
+      <button class="el-header-close" onclick="closeEditLayout()">✕</button>
+    </div>
+    <div class="el-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Drag sections to reorder. Click a title to rename. Toggle 👁 to hide/show. Add custom sections below.</p>
+      <div id="elSectionList"></div>
+      <button class="btn btn-secondary" onclick="elAddCustomSection()" style="width:100%;justify-content:center;margin-top:4px;font-size:13px">+ Add Custom Section</button>
+    </div>
+    <div class="el-footer">
+      <button class="btn btn-secondary" onclick="elResetLayout()" style="font-size:12px">↺ Reset to Default</button>
+      <button class="btn btn-secondary" onclick="elSaveTemplate()" style="font-size:12px">💾 Save as Template</button>
+      <button class="btn btn-primary" onclick="elApplyLayout()" style="margin-left:auto">✓ Apply Layout</button>
+      <div class="el-tpl-wrap" id="elTplNameWrap">
+        <input type="text" id="elTplNameInput" placeholder="Template name…" onkeydown="if(event.key==='Enter')elConfirmSaveTemplate();if(event.key==='Escape')elCancelSaveTemplate()">
+        <button class="btn btn-primary" onclick="elConfirmSaveTemplate()" style="font-size:12px;padding:7px 12px">Save</button>
+        <button class="btn btn-secondary" onclick="elCancelSaveTemplate()" style="font-size:12px;padding:7px 10px">✕</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SAVE DIALOG -->
+<div class="dialog-overlay" id="saveDialog">
+  <div class="dialog-box">
+    <div class="dialog-title">Save Draft</div>
+    <label class="field-label" style="margin-bottom:6px;display:block">File name</label>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+      <input type="text" id="saveFilename" placeholder="lesson-plan" style="margin-bottom:0;flex:1">
+      <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap">.json</span>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closeSaveDialog()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmSave()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT DIALOG -->
+<div class="dialog-overlay" id="exportDialog">
+  <div class="dialog-box">
+    <div class="dialog-title">Export Lesson Plan</div>
+    <label class="field-label" style="margin-bottom:6px;display:block">File name</label>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+      <input type="text" id="exportFilename" placeholder="Lesson_Plan" style="margin-bottom:0;flex:1">
+      <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap">.docx</span>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closeExportDialog()">Cancel</button>
+      <button class="btn btn-gold" onclick="confirmExport()">⬇ Export DOCX</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT DIALOG -->
+<div class="dialog-overlay" id="importDialog">
+  <div class="dialog-box" style="width:440px;max-width:95vw">
+    <div class="dialog-title">Import Lesson Plan</div>
+    <div class="import-tabs">
+      <button class="import-tab active" id="tabFile" onclick="switchImportTab('file')">📂 From File</button>
+      <button class="import-tab" id="tabPaste" onclick="switchImportTab('paste')">📋 Paste JSON</button>
+      <button class="import-tab" id="tabTemplate" onclick="switchImportTab('template')">📋 Templates</button>
+    </div>
+    <div class="import-tab-body" id="importFilePanel">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Choose a .json file saved from this tool or generated by an AI assistant.</p>
+      <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="document.getElementById('importFile').click()">📂 Choose File…</button>
+    </div>
+    <div class="import-tab-body" id="importPastePanel" style="display:none">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Paste the JSON from your AI assistant below, then click Import.</p>
+      <textarea class="paste-area" id="pasteArea" placeholder='{ "teacherName": "...", "lessonTitle": "...", ... }'></textarea>
+      <p id="pasteError" style="font-size:12px;color:var(--red);margin-top:6px;display:none"></p>
+    </div>
+    <div class="import-tab-body" id="importTemplatePanel" style="display:none">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Start with a pre-built structure. Built-in templates load instantly. Click "Load Online Templates" for subject-specific lesson starters.</p>
+      <div id="templateList" style="max-height:240px;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
+      <div id="templatePreview" style="display:none;margin-top:10px;padding:10px;background:var(--pale);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:3px" id="tplPreviewTitle"></div>
+        <div style="font-size:11px;color:var(--muted)" id="tplPreviewDesc"></div>
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closeImportDialog()">Cancel</button>
+      <button class="btn btn-primary" id="importConfirmBtn" onclick="confirmImport()">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI PROMPT DIALOG -->
+<div class="dialog-overlay" id="promptDialog">
+  <div class="dialog-box" style="width:580px;max-width:95vw">
+    <div class="dialog-title">🤖 AI Interview Prompt</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6">Copy this prompt and paste it into any AI assistant (ChatGPT, Claude, Gemini…). The AI will have a friendly conversation with you to gather your lesson details, then produce a JSON you can import directly into this tool.</p>
+    <div class="prompt-box" id="promptBox"></div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closePromptDialog()">Close</button>
+      <button class="btn btn-primary" onclick="copyPrompt()">📋 Copy Prompt</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER GUIDE -->
+<div class="guide-overlay" id="guidePanel">
+  <div class="guide-header">
+    <span class="guide-header-title">📖 LessonCraft — User Guide</span>
+    <button class="guide-close" onclick="closeGuide()">✕ Close</button>
+  </div>
+
+  <!-- Tab nav -->
+  <div class="guide-tabs">
+    <button class="guide-tab active" id="guideTabWalk" onclick="guideTab('walk')">🚶 Walkthrough</button>
+    <button class="guide-tab"        id="guideTabRef"  onclick="guideTab('ref')">📖 Reference</button>
+  </div>
+
+  <!-- REFERENCE TAB -->
+  <div class="guide-body" id="guideBodyRef" style="display:none">
+
+    <div class="guide-section">
+      <h2>Welcome to LessonCraft</h2>
+      <p>LessonCraft helps Ontario educators create structured, curriculum-aligned lesson plans and export them as professionally formatted Word documents. Everything runs in your browser — no account, no login, nothing sent to a server.</p>
+      <div class="guide-tip">💡 Your work auto-saves to your browser. Close the tab and come back — it will still be there.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>The Sections</h2>
+      <h3>1 — Lesson Information</h3><p>Teacher name, date, duration, grade, strand, and lesson title. These appear in the document header on export.</p>
+      <h3>2 — Curriculum Connections</h3><p>Overall Expectations (broad curriculum goals) and Specific Expectations (measurable, lesson-level outcomes). Use <strong>+ Add</strong> for multiple entries.</p>
+      <h3>3 — Learning Goals & Success Criteria</h3><p>"We are learning to…" goals and "I can…" success criteria. Aim for 2–4 of each.</p>
+      <h3>4 — Achievement Chart</h3><p>How this lesson addresses Knowledge & Understanding, Thinking, Communication, and Application.</p>
+      <h3>5 — Assessment</h3><p>Diagnostic (before), Formative/For Learning (during), As Learning (self-assessment), Summative/Of Learning (end product), plus strategies and tools.</p>
+      <h3>6 — Considerations for Planning</h3><p>Prior learning, IEP/ELL differentiation, technology, and materials needed.</p>
+      <h3>7 — Three-Part Lesson</h3>
+      <ul>
+        <li><strong>Minds On</strong> — hook activity, activates prior knowledge (~10–15%)</li>
+        <li><strong>Action</strong> — working activities (~60%). Add as many as needed with <strong>+ Add Activity</strong>.</li>
+        <li><strong>Consolidation</strong> — bring learning together (~10–20%)</li>
+      </ul>
+      <h3>8 — Learning Skills</h3><p>Check relevant skills and add observable "I can" criteria. Focus on 2–3 maximum.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>Saving & Loading</h2>
+      <h3>💾 Save</h3><p>Downloads your plan as a <code>.json</code> file for backup or moving between devices.</p>
+      <h3>⋯ → 📂 Import</h3><p>Load a draft from a file, paste JSON from an AI, or start from a <strong>Template</strong>.</p>
+      <div class="guide-tip">💡 Importing overwrites the current form. Save first if needed.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>✏️ Edit Layout</h2>
+      <p>Open <strong>⋯ → Edit Layout</strong> to customise the form structure:</p>
+      <ul>
+        <li><strong>↑ ↓</strong> — reorder sections</li>
+        <li><strong>Click title</strong> — rename a section</li>
+        <li><strong>👁 / ○</strong> — show or hide a section</li>
+        <li><strong>+ Add Section</strong> — add a custom blank section</li>
+        <li><strong>Save as Template</strong> — save your layout for reuse</li>
+      </ul>
+      <div class="guide-tip">💡 Click <strong>✓ Apply Layout</strong> to save changes and re-render the form.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>🎨 Theme Editor</h2>
+      <p>Open <strong>⋯ → Theme Editor</strong> to personalise the look:</p>
+      <ul>
+        <li><strong>Presets</strong> — 6 ready-made colour schemes (Classic Blue, Forest Green, Slate, Burgundy, Midnight, Minimal)</li>
+        <li><strong>Colors</strong> — customise primary, secondary, highlight, background, and body text individually</li>
+        <li><strong>Fonts</strong> — choose heading and body typefaces independently</li>
+      </ul>
+      <p>Your theme applies to both the app and the exported DOCX. It travels with your <code>.json</code> draft — import on another device and the theme is restored.</p>
+      <div class="guide-tip">💡 Click <strong>✓ Apply</strong> to save. Close without applying reverts to the last saved theme.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>📋 Templates</h2>
+      <p>Open <strong>⋯ → 📂 Import → Templates tab</strong>. Built-in templates load instantly. Click <strong>☁ Load Online Templates</strong> to fetch subject-specific starters from the template library.</p>
+      <p>Save your own templates from the Edit Layout screen — they include your layout, section titles, and current form data.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>🤖 AI Assistant</h2>
+      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-body">Open <strong>⋯ → 🤖 AI Interview Prompt</strong> and copy the prompt.</div></div>
+      <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-body">Paste into Claude, ChatGPT, Gemini, or any AI. Have a natural conversation — skip anything you're unsure about.</div></div>
+      <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-body">The AI produces a JSON block. Copy it.</div></div>
+      <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-body">Open <strong>⋯ → 📂 Import → Paste JSON</strong>, paste it in, and click Import.</div></div>
+      <div class="guide-tip">💡 Review imported content carefully — treat it as a first draft.</div>
+    </div>
+
+  </div>
+
+  <!-- WALKTHROUGH TAB -->
+  <div class="guide-body" id="guideBodyWalk">
+    <div class="guide-section">
+      <h2>Interactive Walkthrough</h2>
+      <p>The walkthrough highlights each part of the app and guides you through a complete lesson plan from start to finish. It works best on a phone or tablet.</p>
+      <div class="guide-tip">💡 You can stop at any time by clicking Skip in the walkthrough tooltip.</div>
+      <button onclick="startWalkthrough()" style="margin-top:14px;width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'Source Sans 3',sans-serif">
+        🚶 Start Walkthrough
+      </button>
+    </div>
+    <div class="guide-section">
+      <h2>What the walkthrough covers</h2>
+      <ul style="line-height:2">
+        <li>The header — Save, Export, and the ⋯ menu</li>
+        <li>Progress tracking</li>
+        <li>Filling in Lesson Information</li>
+        <li>Adding curriculum expectations</li>
+        <li>Writing Learning Goals & Success Criteria</li>
+        <li>Building the Three-Part Lesson</li>
+        <li>Exporting your plan as a DOCX</li>
+        <li>Edit Layout — reordering and renaming</li>
+        <li>Theme Editor — colours and fonts</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+ml>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1F3864">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LessonCraft">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>LessonCraft v2.0</title>
+<script>
+// Load docx library with fallback CDN
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://unpkg.com/docx@8.5.0/build/index.umd.js';
+  s.onerror = function() {
+    var s2 = document.createElement('script');
+    s2.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s);
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// LESSONCRAFT — INTERACTIVE WALKTHROUGH
+// ══════════════════════════════════════════════════════════════════════════════
+
+var WT_STEPS = [
+  {
+    target:  null,
+    title:   'Welcome to LessonCraft! 👋',
+    body:    'This short walkthrough will show you everything — from filling in your first section to exporting a polished Word document. Tap <strong>Next</strong> to begin, or <strong>Skip</strong> anytime.',
+    pos:     'center'
+  },
+  {
+    target:  '.app-header',
+    title:   'The Header',
+    body:    '<strong>💾 Save</strong> downloads a .json backup. <strong>⬇ Export</strong> generates your Word document. The <strong>⋯</strong> menu holds Edit Layout, Theme Editor, Import, AI Assistant, and Dark Mode.',
+    pos:     'below'
+  },
+  {
+    target:  '.completion-strip',
+    title:   'Progress Tracking',
+    body:    'The gold bar and percentage show how complete your plan is. It updates as you fill in required fields. Aim for 100% before exporting.',
+    pos:     'below'
+  },
+  {
+    target:  '#s1',
+    title:   'Step 1 — Lesson Information',
+    body:    'Start here. Fill in teacher name, date, duration, grade and subject, strand, and lesson title. Fields marked <span style="color:var(--gold);font-weight:700">*</span> are required.',
+    pos:     'below'
+  },
+  {
+    target:  '#s3',
+    title:   'Learning Goals & Success Criteria',
+    body:    'Write "We are learning to…" goals and "I can…" success criteria. Use the <strong>+ Add</strong> buttons to include multiple entries. Aim for 2–4 of each.',
+    pos:     'below'
+  },
+  {
+    target:  '#s7',
+    title:   'The Three-Part Lesson',
+    body:    '<strong>Minds On</strong> is your hook (~15%). <strong>Action</strong> is the main work (~60%) — add as many activities as you need. <strong>Consolidation</strong> brings it together (~20%).',
+    pos:     'below'
+  },
+  {
+    target:  '.generate-card',
+    title:   'Export Your Plan',
+    body:    'When your plan is ready, click <strong>⬇ Export DOCX</strong> to download a professionally formatted Word document. Your theme colours apply here too.',
+    pos:     'above'
+  },
+  {
+    target:  null,
+    title:   '✏️ Edit Layout',
+    body:    'Open <strong>⋯ → Edit Layout</strong> to reorder sections, rename them, hide sections you do not need, or add custom sections. Save your layout as a reusable template.',
+    pos:     'center'
+  },
+  {
+    target:  null,
+    title:   '🎨 Theme Editor',
+    body:    'Open <strong>⋯ → Theme Editor</strong> to change colours and fonts. Choose from 6 presets or customise every colour individually. Your theme travels with your exported plan.',
+    pos:     'center'
+  },
+  {
+    target:  null,
+    title:   "You're ready! 🎉",
+    body:    'All done. Fill in each section top to bottom, export when done, and use the ⋯ menu to customise anytime. The <strong>📖 User Guide</strong> is always available in the ⋯ menu.',
+    pos:     'center',
+    last:    true
+  }
+];
+
+var _wtStep = 0;
+
+function guideTab(tab) {
+  document.getElementById('guideTabRef').classList.toggle('active',  tab === 'ref');
+  document.getElementById('guideTabWalk').classList.toggle('active', tab === 'walk');
+  document.getElementById('guideBodyRef').style.display  = tab === 'ref'  ? '' : 'none';
+  document.getElementById('guideBodyWalk').style.display = tab === 'walk' ? '' : 'none';
+}
+
+function startWalkthrough() {
+  closeGuide();
+  _wtStep = 0;
+  document.getElementById('wtOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  _wtRender();
+}
+
+function wtNext() {
+  _wtStep++;
+  if (_wtStep >= WT_STEPS.length) { wtSkip(); return; }
+  _wtRender();
+}
+
+function wtSkip() {
+  document.getElementById('wtOverlay').classList.remove('open');
+  document.getElementById('wtHighlight').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function _wtRender() {
+  var step = WT_STEPS[_wtStep];
+  var total = WT_STEPS.length;
+
+  // Step label
+  document.getElementById('wtStepLabel').textContent = 'Step ' + (_wtStep+1) + ' of ' + total;
+  document.getElementById('wtTitle').textContent = step.title;
+  document.getElementById('wtBody').innerHTML = step.body;
+
+  // Next button
+  var nextBtn = document.getElementById('wtNextBtn');
+  nextBtn.textContent = step.last ? 'Finish ✓' : 'Next →';
+
+  // Progress dots
+  var prog = document.getElementById('wtProgress');
+  prog.innerHTML = WT_STEPS.map(function(s,i) {
+    var cls = i < _wtStep ? 'wt-dot done' : i === _wtStep ? 'wt-dot active' : 'wt-dot';
+    return '<div class="' + cls + '"></div>';
+  }).join('');
+
+  // Highlight target
+  var hl = document.getElementById('wtHighlight');
+  var tt = document.getElementById('wtTooltip');
+  var backdrop = document.getElementById('wtBackdrop');
+
+  if (!step.target || step.pos === 'center') {
+    hl.style.display = 'none';
+    backdrop.style.background = 'rgba(0,0,0,0.55)';
+    // Center tooltip
+    tt.style.top  = '50%';
+    tt.style.left = '50%';
+    tt.style.transform = 'translate(-50%,-50%)';
+    tt.style.bottom = 'auto';
+    tt.style.right  = 'auto';
+  } else {
+    var el = document.querySelector(step.target);
+    if (!el) { hl.style.display = 'none'; return; }
+
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    setTimeout(function() {
+      var rect = el.getBoundingClientRect();
+      var pad = 8;
+      hl.style.display = 'block';
+      hl.style.top    = (rect.top    - pad) + 'px';
+      hl.style.left   = (rect.left   - pad) + 'px';
+      hl.style.width  = (rect.width  + pad*2) + 'px';
+      hl.style.height = (rect.height + pad*2) + 'px';
+
+      // Position tooltip
+      tt.style.transform = 'none';
+      var ttW = 310;
+      var cx = rect.left + rect.width/2;
+      var tx = Math.max(8, Math.min(cx - ttW/2, window.innerWidth - ttW - 8));
+      tt.style.left = tx + 'px';
+      tt.style.right = 'auto';
+
+      // Choose position: prefer below, but flip above if not enough room
+      var ttH = 200; // estimated tooltip height
+      var spaceBelow = window.innerHeight - rect.bottom;
+      var spaceAbove = rect.top;
+      if (step.pos === 'below' && spaceBelow > ttH + 20) {
+        tt.style.top    = (rect.bottom + pad + 12) + 'px';
+        tt.style.bottom = 'auto';
+      } else if (spaceAbove > ttH + 20) {
+        tt.style.top    = Math.max(8, rect.top - ttH - pad - 12) + 'px';
+        tt.style.bottom = 'auto';
+      } else {
+        // Not enough room above or below — pin to bottom of viewport with margin
+        tt.style.top    = 'auto';
+        tt.style.bottom = '80px';
+      }
+      // Ensure tooltip never goes off bottom of screen
+      var ttTop = parseInt(tt.style.top);
+      if (!isNaN(ttTop) && ttTop + ttH > window.innerHeight - 16) {
+        tt.style.top = Math.max(8, window.innerHeight - ttH - 16) + 'px';
+      }
+    }, 350);
+  }
+}
+
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #1F3864;
+  --steel:  #2E5F8A;
+  --sky:    #4A90C4;
+  --light:  #D9E2F3;
+  --pale:   #F0F4FB;
+  --gold:   #C49A28;
+  --white:  #FFFFFF;
+  --ink:    #1A2233;
+  --muted:  #6B7A96;
+  --border: #C8D4E8;
+  --green:  #2D7D52;
+  --red:    #C0392B;
+  --bg:     #F5F7FB;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+/* HEADER */
+.app-header { background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(31,56,100,0.25); }
+.header-inner { max-width: 1100px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: nowrap; }
+.header-brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex-shrink: 1; overflow: hidden; }
+.header-icon { width: 36px; height: 36px; background: var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.header-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-sub { font-size: 11px; color: #7A9CC8; margin-top: 1px; white-space: nowrap; }
+.header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+/* Mobile panel — full-width strip below header */
+.mob-panel { display: none; background: #162d52; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
+.mob-panel.open { display: flex; }
+.mob-panel-btn { display: flex; align-items: center; gap: 7px; padding: 9px 14px; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+.mob-panel-btn:hover { background: rgba(255,255,255,0.18); }
+.mob-panel-btn.danger { color: #f8a4a4; border-color: rgba(248,164,164,0.3); }
+body.dark .mob-panel { background: #070f1a; }
+.version-badge { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.14); padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
+.progress-bar-wrap { background: rgba(0,0,0,0.2); height: 3px; }
+.progress-bar-fill { height: 100%; background: var(--gold); transition: width 0.4s ease; width: 0%; }
+
+/* LAYOUT */
+.app-body { max-width: 1100px; margin: 0 auto; padding: 28px 28px 80px; display: grid; grid-template-columns: 210px 1fr; gap: 24px; align-items: start; }
+
+/* SIDEBAR */
+.sidebar { position: sticky; top: 72px; background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 12px rgba(31,56,100,0.07); }
+.sidebar-label { padding: 12px 14px 8px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; }
+.nav-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; border-left: 3px solid transparent; font-size: 13px; color: var(--muted); text-decoration: none; border-bottom: 1px solid #F0F2F7; transition: background 0.15s, color 0.15s; }
+.nav-item:last-child { border-bottom: none; }
+.nav-item:hover { background: var(--pale); color: var(--steel); }
+.nav-item.active { background: var(--pale); color: var(--navy); border-left-color: var(--gold); font-weight: 600; }
+.nav-item.done { color: var(--green); }
+.nav-num { width: 18px; height: 18px; background: var(--light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--steel); flex-shrink: 0; }
+.nav-item.active .nav-num { background: var(--navy); color: var(--white); }
+.nav-check { font-size: 10px; margin-left: auto; opacity: 0; }
+.nav-item.done .nav-check { opacity: 1; }
+
+/* MAIN */
+.main-content { display: flex; flex-direction: column; gap: 20px; }
+
+/* COMPLETION STRIP */
+.completion-strip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 6px rgba(31,56,100,0.06); }
+.completion-label { font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap; }
+.completion-track { flex: 1; height: 8px; background: var(--light); border-radius: 4px; overflow: hidden; }
+.completion-fill { height: 100%; background: linear-gradient(90deg, var(--steel), var(--gold)); border-radius: 4px; transition: width 0.5s ease; }
+.completion-pct { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--steel); white-space: nowrap; min-width: 36px; text-align: right; }
+
+/* SECTION CARD */
+.section-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 12px rgba(31,56,100,0.06); scroll-margin-top: 80px; }
+.section-head { background: var(--navy); padding: 14px 22px; display: flex; align-items: center; gap: 12px; }
+.section-head-num { width: 26px; height: 26px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--white); flex-shrink: 0; }
+.section-head h2 { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--white); }
+.section-head p { font-size: 11px; color: #7A9CC8; margin-top: 2px; }
+.section-body { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+
+/* FIELDS */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field-row { display: grid; gap: 14px; }
+.field-row.cols-2 { grid-template-columns: 1fr 1fr; }
+.field-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.field-label { font-size: 11px; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: 0.07em; }
+.required { color: var(--gold); }
+.field-hint { font-size: 12px; color: var(--muted); font-style: italic; background: var(--pale); border-left: 3px solid var(--sky); padding: 7px 11px; border-radius: 0 6px 6px 0; line-height: 1.5; }
+input[type="text"], input[type="date"], select, textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: var(--ink); background: var(--white); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+input:focus, select:focus, textarea:focus { border-color: var(--steel); box-shadow: 0 0 0 3px rgba(46,95,138,0.12); }
+textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+textarea.tall { min-height: 130px; }
+textarea.short { min-height: 60px; }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7A96' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; }
+hr.divider { border: none; border-top: 1.5px solid var(--border); }
+
+/* REPEATER */
+.repeater { display: flex; flex-direction: column; gap: 6px; }
+.repeater-item { display: flex; gap: 6px; align-items: flex-start; }
+.repeater-item input, .repeater-item textarea { flex: 1; }
+.repeater-bullet { width: 26px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--steel); font-size: 16px; flex-shrink: 0; }
+.btn-remove { width: 30px; height: 30px; border: 1.5px solid #E0C8C8; background: #FDF5F5; color: var(--red); border-radius: 6px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 3px; transition: background 0.15s; }
+.btn-remove:hover { background: #FAE8E8; }
+.btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 1.5px dashed var(--sky); background: transparent; color: var(--steel); border-radius: 7px; cursor: pointer; font-size: 13px; font-family: 'Source Sans 3', sans-serif; transition: background 0.15s; margin-top: 4px; }
+.btn-add:hover { background: var(--pale); border-color: var(--steel); }
+
+/* PHASE */
+.phase-header { background: var(--steel); color: var(--white); padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.phase-badge { background: rgba(255,255,255,0.18); padding: 2px 9px; border-radius: 10px; font-size: 11px; font-family: 'DM Mono', monospace; }
+
+/* ACTIVITY BLOCK */
+.activity-block { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+.activity-block-head { background: var(--pale); padding: 10px 16px; border-bottom: 1.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.activity-tag { background: var(--steel); color: var(--white); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 8px; border-radius: 4px; font-family: 'DM Mono', monospace; }
+.activity-block-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+/* BUTTONS */
+.btn { padding: 9px 20px; border-radius: 8px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 7px; transition: all 0.18s; }
+.btn-primary { background: var(--navy); color: var(--white); box-shadow: 0 2px 8px rgba(31,56,100,0.2); }
+.btn-primary:hover { background: var(--steel); }
+.btn-secondary { background: var(--white); color: var(--navy); border: 1.5px solid var(--border); }
+.btn-secondary:hover { background: var(--pale); border-color: var(--steel); }
+.btn-gold { background: var(--gold); color: var(--white); box-shadow: 0 2px 8px rgba(196,154,40,0.3); }
+.btn-gold:hover { background: #B08820; }
+.btn-header { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 7px 13px; border-radius: 6px; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; transition: background 0.15s; }
+.btn-header:hover { background: rgba(255,255,255,0.22); }
+
+/* GENERATE CARD */
+.generate-card { background: linear-gradient(135deg, var(--navy) 0%, #2A4A80 100%); border-radius: 12px; padding: 26px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 4px 20px rgba(31,56,100,0.2); }
+.generate-card h3 { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--white); margin-bottom: 5px; }
+.generate-card p { font-size: 13px; color: #7A9CC8; max-width: 400px; line-height: 1.5; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--navy); color: var(--white); padding: 11px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; box-shadow: 0 8px 24px rgba(31,56,100,0.3); transform: translateY(70px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 200; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* SAVE DIALOG */
+.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; align-items: center; justify-content: center; }
+.dialog-overlay.open { display: flex; }
+.dialog-box { background: var(--white); border-radius: 12px; padding: 24px; width: 320px; max-width: 90vw; box-shadow: 0 8px 32px rgba(31,56,100,0.25); }
+.dialog-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 12px; }
+.dialog-box input { width: 100%; margin-bottom: 14px; }
+.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* LEARNING SKILLS CHECKBOXES */
+.skill-col label.field-label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.skill-col input[type="checkbox"] { width: auto; cursor: pointer; }
+
+/* DARK MODE */
+body.dark { --navy:#0d1f3c; --steel:#1e3f5a; --light:#1a2a3a; --pale:#1e2d3d; --gold:#C49A28; --white:#e8edf5; --ink:#d4dbe8; --muted:#8a9bb8; --border:#2a3a4a; --bg:#0f1923; }
+body.dark .app-header { background: #070f1a; }
+body.dark .section-card, body.dark .sidebar, body.dark .completion-strip { background: #131e2b; border-color: #1e2d3d; }
+body.dark input, body.dark textarea, body.dark select { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
+body.dark .activity-block { border-color: #1e2d3d; }
+body.dark .activity-block-head { background: #1a2a3a; border-color: #1e2d3d; }
+body.dark .btn-secondary { background: #1a2a3a; color: #d4dbe8; border-color: #2a3a4a; }
+body.dark .dialog-box { background: #131e2b; }
+body.dark .field-hint { background: #1a2a3a; }
+
+/* MOBILE DRAWER */
+.hamburger { display: none; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 36px; height: 36px; border-radius: 6px; font-size: 18px; cursor: pointer; align-items: center; justify-content: center; flex-shrink: 0; }
+.mob-only { display: none; }
+.drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 400; }
+.drawer-overlay.open { display: block; }
+.drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: var(--white); z-index: 410; transform: translateX(-100%); transition: transform 0.26s cubic-bezier(0.4,0,0.2,1); box-shadow: 4px 0 24px rgba(31,56,100,0.18); overflow-y: auto; }
+.drawer.open { transform: translateX(0); }
+.drawer-header { background: var(--navy); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+.drawer-title { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); font-weight: 600; }
+.drawer-close { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 30px; height: 30px; border-radius: 6px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+body.dark .drawer { background: #131e2b; }
+
+/* OVERFLOW MENU */
+.overflow-menu-wrap { position: relative; }
+.overflow-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(31,56,100,0.18); min-width: 200px; z-index: 200; overflow: hidden; }
+.overflow-menu.open { display: block; }
+.overflow-item { display: block; width: 100%; padding: 11px 16px; text-align: left; background: none; border: none; font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: var(--ink); cursor: pointer; transition: background 0.12s; }
+.overflow-item:hover { background: var(--pale); }
+.overflow-danger { color: var(--red); }
+.overflow-divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+body.dark .overflow-menu { background: #1a2a3a; border-color: #2a3a4a; }
+body.dark .overflow-item { color: #d4dbe8; }
+body.dark .overflow-item:hover { background: #131e2b; }
+body.dark .overflow-divider { border-color: #2a3a4a; }
+
+/* IMPORT TABS */
+.import-tabs { display: flex; margin-bottom: -1px; }
+.import-tab { flex: 1; padding: 9px; font-size: 13px; font-weight: 600; font-family: 'Source Sans 3', sans-serif; cursor: pointer; background: var(--pale); color: var(--muted); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; transition: all 0.15s; text-align: center; }
+.import-tab:first-child { border-right: none; }
+.import-tab.active { background: var(--white); color: var(--navy); z-index: 1; }
+.import-tab-body { border: 1px solid var(--border); border-radius: 0 0 8px 8px; padding: 16px; margin-bottom: 14px; }
+textarea.paste-area { width: 100%; min-height: 130px; font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.5; resize: vertical; }
+body.dark .import-tab { background: #1a2a3a; color: var(--muted); }
+body.dark .import-tab.active { background: #131e2b; color: var(--gold); }
+body.dark .import-tab-body { background: #131e2b; border-color: #2a3a4a; }
+body.dark textarea.paste-area { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
+
+/* GUIDE PANEL */
+.guide-overlay { display: none; position: fixed; inset: 0; z-index: 500; background: var(--bg); overflow-y: auto; }
+.guide-overlay.open { display: block; }
+.guide-header { background: var(--navy); padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1; box-shadow: 0 2px 12px rgba(31,56,100,0.25); }
+.guide-header-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); font-weight: 700; }
+.guide-close { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 7px 14px; border-radius: 6px; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; }
+.guide-body { max-width: 780px; margin: 0 auto; padding: 36px 28px 60px; }
+.guide-section { margin-bottom: 36px; }
+.guide-section h2 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--navy); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--light); }
+.guide-section h3 { font-size: 13px; font-weight: 700; color: var(--steel); text-transform: uppercase; letter-spacing: 0.07em; margin: 16px 0 6px; }
+.guide-section p { font-size: 14px; line-height: 1.75; color: var(--ink); margin-bottom: 10px; }
+.guide-section ul { padding-left: 20px; margin-bottom: 10px; }
+.guide-section ul li { font-size: 14px; line-height: 1.75; color: var(--ink); margin-bottom: 4px; }
+.guide-tip { background: var(--pale); border-left: 4px solid var(--gold); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 13px; color: var(--ink); margin: 12px 0; line-height: 1.6; }
+.guide-step { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.guide-step-num { width: 28px; height: 28px; background: var(--navy); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.guide-step-body { flex: 1; font-size: 14px; line-height: 1.7; color: var(--ink); }
+.guide-step-body strong { color: var(--navy); }
+.guide-kbd { display: inline-block; background: var(--steel); color: var(--white); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-family: 'DM Mono', monospace; vertical-align: middle; }
+body.dark .guide-overlay { background: #0f1923; }
+body.dark .guide-section h2 { color: #d4dbe8; border-color: #1e2d3d; }
+body.dark .guide-section p, body.dark .guide-section ul li, body.dark .guide-step-body { color: #d4dbe8; }
+body.dark .guide-tip { background: #1a2a3a; color: #d4dbe8; }
+body.dark .guide-step-body strong { color: #d4dbe8; }
+
+/* PROMPT DIALOG */
+.prompt-box { background: var(--pale); border: 1.5px solid var(--border); border-radius: 8px; padding: 14px; font-family: 'DM Mono', monospace; font-size: 11.5px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; max-height: 320px; overflow-y: auto; margin-bottom: 14px; }
+body.dark .prompt-box { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .app-body { grid-template-columns: 1fr; padding: 12px 12px 80px; }
+  .sidebar { display: none; }
+  .hamburger { display: flex; }
+  .mob-only { display: flex !important; }
+  .field-row.cols-2, .field-row.cols-3 { grid-template-columns: 1fr; }
+  .generate-card { flex-direction: column; }
+  .generate-card .btn { width: 100%; justify-content: center; }
+  .version-badge { display: none; }
+  .header-inner { padding: 10px 14px; }
+  .header-title { font-size: 15px; }
+  .header-sub { display: none; }
+  .desk-only { display: none !important; }
+}
+
+/* ─── EDIT LAYOUT OVERLAY ─── */
+.el-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:600; align-items:center; justify-content:center; }
+.el-overlay.open { display:flex; }
+.el-box { background:var(--white); border-radius:14px; width:680px; max-width:96vw; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(31,56,100,0.28); overflow:hidden; }
+.el-header { background:var(--navy); padding:16px 22px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.el-header-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--white); font-weight:700; }
+.el-header-close { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#fff; width:30px; height:30px; border-radius:6px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.el-body { overflow-y:auto; padding:18px; flex:1; }
+.el-row { display:flex; align-items:center; gap:8px; background:var(--white); border:1.5px solid var(--border); border-radius:9px; padding:10px 12px; margin-bottom:8px; cursor:grab; transition:box-shadow 0.15s; }
+.el-row:active { cursor:grabbing; box-shadow:0 4px 16px rgba(31,56,100,0.18); }
+.el-handle { font-size:18px; color:var(--muted); cursor:grab; flex-shrink:0; }
+.el-row-body { flex:1; display:flex; flex-direction:column; gap:5px; min-width:0; }
+.el-title-input { width:100%; border:1px solid var(--border); border-radius:5px; padding:5px 8px; font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:600; color:var(--navy); background:transparent; outline:none; }
+.el-title-input:focus { border-color:var(--steel); background:var(--pale); }
+.el-subtitle-input { width:100%; border:1px solid transparent; border-radius:5px; padding:4px 8px; font-family:'Source Sans 3',sans-serif; font-size:11px; color:var(--muted); background:transparent; outline:none; }
+.el-subtitle-input:focus { border-color:var(--border); background:var(--pale); }
+.el-row-actions { display:flex; gap:4px; align-items:center; flex-shrink:0; }
+.el-btn { width:28px; height:28px; border:1.5px solid var(--border); background:var(--pale); color:var(--ink); border-radius:6px; cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center; transition:background 0.12s; padding:0; }
+.el-btn:hover:not([disabled]) { background:var(--light); border-color:var(--steel); }
+.el-btn[disabled] { opacity:0.3; cursor:default; }
+.el-btn.el-del { color:var(--red); border-color:#E0C8C8; }
+.el-btn.el-del:hover { background:#FAE8E8; }
+.el-builtin-badge { font-size:9px; font-family:'DM Mono',monospace; color:var(--muted); background:var(--light); border:1px solid var(--border); padding:2px 6px; border-radius:4px; white-space:nowrap; }
+.el-footer { padding:14px 18px; border-top:1.5px solid var(--border); display:flex; gap:8px; flex-wrap:wrap; align-items:center; flex-shrink:0; }
+.el-tpl-wrap { display:none; align-items:center; gap:6px; width:100%; margin-top:6px; }
+.el-tpl-wrap input { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:7px; font-size:13px; font-family:'Source Sans 3',sans-serif; color:var(--ink); outline:none; }
+.el-tpl-wrap input:focus { border-color:var(--steel); }
+body.dark .el-box { background:#131e2b; }
+body.dark .el-row { background:#1a2a3a; border-color:#2a3a4a; }
+body.dark .el-title-input, body.dark .el-subtitle-input { color:#d4dbe8; }
+body.dark .el-title-input:focus, body.dark .el-subtitle-input:focus { background:#0f1923; }
+body.dark .el-btn { background:#0f1923; color:#d4dbe8; border-color:#2a3a4a; }
+body.dark .el-btn:hover:not([disabled]) { background:#1a2a3a; }
+body.dark .el-builtin-badge { background:#1a2a3a; color:#8a9bb8; border-color:#2a3a4a; }
+body.dark .el-footer { border-color:#2a3a4a; }
+body.dark .el-tpl-wrap input { background:#0f1923; color:#d4dbe8; border-color:#2a3a4a; }
+
+/* ══════════════════════════════════════════════════════════════
+   THEME EDITOR OVERLAY
+══════════════════════════════════════════════════════════════ */
+#themeOverlay { display:none; position:fixed; inset:0; z-index:600; background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; }
+#themeOverlay.open { display:block; }
+.te-header { position:sticky; top:0; z-index:10; background:var(--navy); padding:14px 18px; display:flex; align-items:center; gap:12px; box-shadow:0 2px 10px rgba(0,0,0,0.2); }
+.te-header-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:#fff; flex:1; }
+.te-header-sub { font-size:11px; color:#7A9CC8; margin-top:1px; }
+.te-body { max-width:600px; margin:0 auto; padding:20px 16px 80px; }
+.te-section { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:16px; }
+.te-section-title { font-family:'Playfair Display',serif; font-size:14px; font-weight:600; color:var(--navy); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.te-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.te-row:last-child { margin-bottom:0; }
+.te-label { font-size:12px; font-weight:600; color:var(--navy); text-transform:uppercase; letter-spacing:0.06em; flex:1; }
+.te-color-wrap { display:flex; align-items:center; gap:8px; }
+.te-color-swatch { width:36px; height:36px; border-radius:8px; border:2px solid var(--border); cursor:pointer; padding:0; -webkit-tap-highlight-color:transparent; overflow:hidden; }
+.te-color-swatch input[type=color] { width:44px; height:44px; border:none; padding:0; margin:-4px; cursor:pointer; background:none; }
+.te-color-hex { font-family:'DM Mono',monospace; font-size:12px; color:var(--ink); border:1.5px solid var(--border); border-radius:6px; padding:6px 10px; width:90px; }
+.te-font-select { flex:1; max-width:240px; }
+.te-preset-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+.te-preset-card { border:2px solid var(--border); border-radius:10px; padding:12px; cursor:pointer; transition:border-color 0.15s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+.te-preset-card:hover { border-color:var(--gold); }
+.te-preset-card.active { border-color:var(--gold); background:var(--pale); }
+.te-preset-name { font-weight:600; font-size:13px; color:var(--navy); margin-bottom:6px; }
+.te-preset-swatches { display:flex; gap:4px; }
+.te-preset-dot { width:18px; height:18px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); }
+.te-preview { background:var(--pale); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:16px; }
+.te-preview-title { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; }
+.te-preview-card { background:var(--white); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
+.te-preview-head { padding:10px 14px; }
+.te-preview-body { padding:12px 14px; }
+.te-preview-field { height:32px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); }
+
+
+/* ══════════════════════════════════════════════════════════════
+   INTERACTIVE WALKTHROUGH
+══════════════════════════════════════════════════════════════ */
+#wtOverlay { display:none; position:fixed; inset:0; z-index:700; pointer-events:none; }
+#wtOverlay.open { display:block; }
+#wtBackdrop { position:absolute; inset:0; background:rgba(0,0,0,0.55); pointer-events:all; }
+#wtTooltip {
+  position:absolute; z-index:10; pointer-events:all;
+  background:var(--white); border-radius:14px; padding:18px 20px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.25); width:300px; max-width:90vw;
+  border:2px solid var(--gold);
+  max-height:60vh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+}
+#wtTooltip.wt-bottom { top:auto; }
+.wt-step-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
+.wt-title { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--navy); margin-bottom:8px; }
+.wt-body  { font-size:13px; color:var(--ink); line-height:1.6; margin-bottom:14px; }
+.wt-actions { display:flex; gap:8px; align-items:center; }
+.wt-btn-next { background:var(--navy); color:#fff; border:none; border-radius:7px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; flex:1; }
+.wt-btn-next:hover { background:var(--steel); }
+.wt-btn-skip { background:none; border:none; color:var(--muted); font-size:12px; cursor:pointer; -webkit-tap-highlight-color:transparent; padding:4px 8px; }
+.wt-progress { display:flex; gap:5px; margin-right:auto; }
+.wt-dot { width:7px; height:7px; border-radius:50%; background:var(--border); transition:background 0.2s; }
+.wt-dot.active { background:var(--gold); }
+.wt-dot.done   { background:var(--navy); }
+#wtHighlight {
+  position:absolute; z-index:5; border-radius:10px;
+  box-shadow:0 0 0 4px var(--gold), 0 0 0 9999px rgba(0,0,0,0.01);
+  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+}
+
+/* Updated guide ── tabs */
+.guide-tabs { display:flex; border-bottom:1px solid var(--border); }
+.guide-tab { flex:1; padding:10px 8px; font-size:13px; font-weight:600; text-align:center; cursor:pointer; color:var(--muted); border-bottom:2px solid transparent; background:none; border-top:none; border-left:none; border-right:none; font-family:'Source Sans 3',sans-serif; -webkit-tap-highlight-color:transparent; transition:all 0.15s; }
+.guide-tab.active { color:var(--navy); border-bottom-color:var(--gold); }
+#guideTabRef   { }
+#guideTabWalk  { }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <button class="hamburger" onclick="openDrawer()" title="Navigate sections">☰</button>
+      <div class="header-icon">📋</div>
+      <div>
+        <div class="header-title">LessonCraft</div>
+        <div class="header-sub">Ontario Curriculum — Three-Part Lesson Framework</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="version-badge desk-only">v2.0</span>
+      <!-- Desktop: overflow dropdown -->
+      <div class="overflow-menu-wrap desk-only">
+        <button class="btn-header" onclick="toggleOverflow(event)" title="More options">⋯</button>
+        <div class="overflow-menu" id="overflowMenu">
+          <button class="overflow-item" onclick="openGuide();closeOverflow()">📖 User Guide</button>
+          <button class="overflow-item" onclick="openPromptDialog();closeOverflow()">🤖 AI Interview Prompt</button>
+          <button class="overflow-item" onclick="openImportDialog();closeOverflow()">📂 Import Draft</button>
+          <button class="overflow-item" onclick="toggleDark();closeOverflow()" id="darkItem">🌙 Dark Mode</button>
+          <hr class="overflow-divider">
+          <button class="overflow-item" onclick="openEditLayout()">✏️ Edit Layout</button>
+          <button class="overflow-item" onclick="openThemeEditor()">🎨 Theme Editor</button>
+          <hr class="overflow-divider">
+          <button class="overflow-item overflow-danger" onclick="clearAll();closeOverflow()">🗑 Clear Form</button>
+        </div>
+      </div>
+      <!-- Mobile: panel toggle (hidden on desktop) -->
+      <button class="btn-header mob-only" onclick="toggleMobPanel()" id="mobMenuBtn" title="More options">⋯</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importFromFile(event)">
+      <button class="btn btn-secondary" onclick="saveDraft()">💾 Save</button>
+      <button class="btn btn-gold" onclick="exportDocx()">⬇ Export</button>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
+  <!-- Mobile actions panel — opens below header -->
+  <div class="mob-panel" id="mobPanel">
+    <button class="mob-panel-btn" onclick="openGuide();closeMobPanel()">📖 User Guide</button>
+    <button class="mob-panel-btn" onclick="openPromptDialog();closeMobPanel()">🤖 AI Prompt</button>
+    <button class="mob-panel-btn" onclick="openImportDialog();closeMobPanel()">📂 Import</button>
+    <button class="mob-panel-btn" onclick="toggleDark();closeMobPanel()" id="darkItemMob">🌙 Dark Mode</button>
+    <button class="mob-panel-btn" onclick="openEditLayout();closeMobPanel()">✏️ Edit Layout</button>
+    <button class="mob-panel-btn" onclick="openThemeEditor();closeMobPanel()">🎨 Theme Editor</button>
+    <button class="mob-panel-btn danger" onclick="clearAll();closeMobPanel()">🗑 Clear</button>
+  </div>
+</header>
+
+<!-- MOBILE DRAWER -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-title">Sections</span>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <a class="nav-item active" href="#s1" onclick="setNav(this);closeDrawer()"><span class="nav-num">1</span> Lesson Info <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s2" onclick="setNav(this);closeDrawer()"><span class="nav-num">2</span> Curriculum <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s3" onclick="setNav(this);closeDrawer()"><span class="nav-num">3</span> Goals & Criteria <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s4" onclick="setNav(this);closeDrawer()"><span class="nav-num">4</span> Achievement Chart <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s5" onclick="setNav(this);closeDrawer()"><span class="nav-num">5</span> Assessment <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s6" onclick="setNav(this);closeDrawer()"><span class="nav-num">6</span> Planning Notes <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s7" onclick="setNav(this);closeDrawer()"><span class="nav-num">7</span> Three-Part Lesson <span class="nav-check">✓</span></a>
+  <a class="nav-item" href="#s8" onclick="setNav(this);closeDrawer()"><span class="nav-num">8</span> Learning Skills <span class="nav-check">✓</span></a>
+</div>
+
+<div class="app-body">
+
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar">
+    <div class="sidebar-label">Sections</div>
+    <a class="nav-item active" href="#s1" onclick="setNav(this)"><span class="nav-num">1</span> Lesson Info <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s2" onclick="setNav(this)"><span class="nav-num">2</span> Curriculum <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s3" onclick="setNav(this)"><span class="nav-num">3</span> Goals & Criteria <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s4" onclick="setNav(this)"><span class="nav-num">4</span> Achievement Chart <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s5" onclick="setNav(this)"><span class="nav-num">5</span> Assessment <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s6" onclick="setNav(this)"><span class="nav-num">6</span> Planning Notes <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s7" onclick="setNav(this)"><span class="nav-num">7</span> Three-Part Lesson <span class="nav-check">✓</span></a>
+    <a class="nav-item" href="#s8" onclick="setNav(this)"><span class="nav-num">8</span> Learning Skills <span class="nav-check">✓</span></a>
+  </nav>
+
+  <div class="main-content">
+
+    <!-- PROGRESS -->
+    <div class="completion-strip">
+      <div class="completion-label">Plan Completion</div>
+      <div class="completion-track"><div class="completion-fill" id="completionFill"></div></div>
+      <div class="completion-pct" id="completionPct">0%</div>
+    </div>
+
+    <!-- SECTION CONTAINER (data-driven v2.0) -->
+    <div id="sectionContainer"></div>
+
+    <!-- EXPORT -->
+    <div class="generate-card">
+      <div>
+        <h3>Ready to export your lesson plan?</h3>
+        <p>Exports as a professionally formatted DOCX file — ready to print or submit.</p>
+      </div>
+      <button class="btn btn-gold" onclick="exportDocx()" style="white-space:nowrap;font-size:15px;padding:13px 26px">⬇ Export DOCX</button>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-body -->
+
+
+<!-- EDIT LAYOUT OVERLAY -->
+<div class="el-overlay" id="editLayoutOverlay">
+  <div class="el-box">
+    <div class="el-header">
+      <span class="el-header-title">✏️ Edit Layout</span>
+      <button class="el-header-close" onclick="closeEditLayout()">✕</button>
+    </div>
+    <div class="el-body">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Drag sections to reorder. Click a title to rename. Toggle 👁 to hide/show. Add custom sections below.</p>
+      <div id="elSectionList"></div>
+      <button class="btn btn-secondary" onclick="elAddCustomSection()" style="width:100%;justify-content:center;margin-top:4px;font-size:13px">+ Add Custom Section</button>
+    </div>
+    <div class="el-footer">
+      <button class="btn btn-secondary" onclick="elResetLayout()" style="font-size:12px">↺ Reset to Default</button>
+      <button class="btn btn-secondary" onclick="elSaveTemplate()" style="font-size:12px">💾 Save as Template</button>
+      <button class="btn btn-primary" onclick="elApplyLayout()" style="margin-left:auto">✓ Apply Layout</button>
+      <div class="el-tpl-wrap" id="elTplNameWrap">
+        <input type="text" id="elTplNameInput" placeholder="Template name…" onkeydown="if(event.key==='Enter')elConfirmSaveTemplate();if(event.key==='Escape')elCancelSaveTemplate()">
+        <button class="btn btn-primary" onclick="elConfirmSaveTemplate()" style="font-size:12px;padding:7px 12px">Save</button>
+        <button class="btn btn-secondary" onclick="elCancelSaveTemplate()" style="font-size:12px;padding:7px 10px">✕</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SAVE DIALOG -->
+<div class="dialog-overlay" id="saveDialog">
+  <div class="dialog-box">
+    <div class="dialog-title">Save Draft</div>
+    <label class="field-label" style="margin-bottom:6px;display:block">File name</label>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+      <input type="text" id="saveFilename" placeholder="lesson-plan" style="margin-bottom:0;flex:1">
+      <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap">.json</span>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closeSaveDialog()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmSave()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT DIALOG -->
+<div class="dialog-overlay" id="exportDialog">
+  <div class="dialog-box">
+    <div class="dialog-title">Export Lesson Plan</div>
+    <label class="field-label" style="margin-bottom:6px;display:block">File name</label>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
+      <input type="text" id="exportFilename" placeholder="Lesson_Plan" style="margin-bottom:0;flex:1">
+      <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap">.docx</span>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closeExportDialog()">Cancel</button>
+      <button class="btn btn-gold" onclick="confirmExport()">⬇ Export DOCX</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT DIALOG -->
+<div class="dialog-overlay" id="importDialog">
+  <div class="dialog-box" style="width:440px;max-width:95vw">
+    <div class="dialog-title">Import Lesson Plan</div>
+    <div class="import-tabs">
+      <button class="import-tab active" id="tabFile" onclick="switchImportTab('file')">📂 From File</button>
+      <button class="import-tab" id="tabPaste" onclick="switchImportTab('paste')">📋 Paste JSON</button>
+      <button class="import-tab" id="tabTemplate" onclick="switchImportTab('template')">📋 Templates</button>
+    </div>
+    <div class="import-tab-body" id="importFilePanel">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Choose a .json file saved from this tool or generated by an AI assistant.</p>
+      <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="document.getElementById('importFile').click()">📂 Choose File…</button>
+    </div>
+    <div class="import-tab-body" id="importPastePanel" style="display:none">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Paste the JSON from your AI assistant below, then click Import.</p>
+      <textarea class="paste-area" id="pasteArea" placeholder='{ "teacherName": "...", "lessonTitle": "...", ... }'></textarea>
+      <p id="pasteError" style="font-size:12px;color:var(--red);margin-top:6px;display:none"></p>
+    </div>
+    <div class="import-tab-body" id="importTemplatePanel" style="display:none">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Start with a pre-built structure. Built-in templates load instantly. Click "Load Online Templates" for subject-specific lesson starters.</p>
+      <div id="templateList" style="max-height:240px;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
+      <div id="templatePreview" style="display:none;margin-top:10px;padding:10px;background:var(--pale);border-radius:8px;border:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:3px" id="tplPreviewTitle"></div>
+        <div style="font-size:11px;color:var(--muted)" id="tplPreviewDesc"></div>
+      </div>
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closeImportDialog()">Cancel</button>
+      <button class="btn btn-primary" id="importConfirmBtn" onclick="confirmImport()">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI PROMPT DIALOG -->
+<div class="dialog-overlay" id="promptDialog">
+  <div class="dialog-box" style="width:580px;max-width:95vw">
+    <div class="dialog-title">🤖 AI Interview Prompt</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6">Copy this prompt and paste it into any AI assistant (ChatGPT, Claude, Gemini…). The AI will have a friendly conversation with you to gather your lesson details, then produce a JSON you can import directly into this tool.</p>
+    <div class="prompt-box" id="promptBox"></div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closePromptDialog()">Close</button>
+      <button class="btn btn-primary" onclick="copyPrompt()">📋 Copy Prompt</button>
+    </div>
+  </div>
+</div>
+
+<!-- USER GUIDE -->
+<div class="guide-overlay" id="guidePanel">
+  <div class="guide-header">
+    <span class="guide-header-title">📖 LessonCraft — User Guide</span>
+    <button class="guide-close" onclick="closeGuide()">✕ Close</button>
+  </div>
+  <div class="guide-body">
+    <div class="guide-section">
+      <h2>Welcome</h2>
+      <p>The LessonCraft helps Ontario educators create structured, curriculum-aligned lesson plans and export them as professionally formatted Word documents. Everything runs in your browser — no account, no login, nothing sent to a server.</p>
+      <div class="guide-tip">💡 Your work saves automatically as you type. Close the tab and come back — it will still be there.</div>
+    </div>
+    <div class="guide-section">
+      <h2>Getting Started</h2>
+      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-body"><strong>Fill in the 8 sections</strong> from top to bottom. Fields marked <span style="color:var(--gold);font-weight:700">*</span> are required.</div></div>
+      <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-body"><strong>Track your progress</strong> with the gold bar at the top and the Plan Completion strip.</div></div>
+      <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-body"><strong>Export when ready</strong> — click <span class="guide-kbd">⬇ Export</span> for a professionally formatted Word document.</div></div>
+    </div>
+    <div class="guide-section">
+      <h2>The 8 Sections</h2>
+      <h3>1 — Lesson Information</h3><p>Teacher name, date, duration, grade and subject, curriculum strand, and lesson title. These appear in the document header on export.</p>
+      <h3>2 — Curriculum Connections</h3><p>Overall Expectations (broad, coded curriculum goals) and Specific Expectations (measurable, lesson-level outcomes). Use <strong>+ Add</strong> to include multiple expectations.</p>
+      <h3>3 — Learning Goals & Success Criteria</h3><p>"We are learning to…" goals and "I can…" success criteria students use to self-assess. Aim for 2–4 of each.</p>
+      <h3>4 — Achievement Chart</h3><p>How this lesson addresses the four Ontario categories: Knowledge & Understanding, Thinking, Communication, and Application.</p>
+      <h3>5 — Assessment</h3><p>Diagnostic (before), Formative/For Learning (during), As Learning (self-assessment), Summative/Of Learning (end product), plus instructional strategies and assessment tools.</p>
+      <h3>6 — Considerations for Planning</h3><p>Prior learning, IEP/ELL differentiation, technology used, and materials needed.</p>
+      <h3>7 — Three-Part Lesson</h3>
+      <ul>
+        <li><strong>Minds On</strong> — hook activity, activates prior knowledge (~10–15%)</li>
+        <li><strong>Action</strong> — main working activities (~60%). Add as many as needed.</li>
+        <li><strong>Consolidation</strong> — bring learning together, check understanding (~10–20%)</li>
+      </ul>
+      <h3>8 — Learning Skills</h3><p>Check relevant skills and add "I can" criteria. Focus on 2–3 maximum.</p>
+    </div>
+    <div class="guide-section">
+      <h2>Saving & Loading</h2>
+      <h3>Auto-Save</h3><p>Saves automatically to browser storage between sessions on the same device.</p>
+      <h3>💾 Save</h3><p>Downloads your plan as a <strong>.json</strong> file for backup, sharing, or moving between devices.</p>
+      <h3>⋯ → 📂 Import</h3><p>Load a draft from a file, or paste JSON directly from an AI assistant.</p>
+      <div class="guide-tip">💡 Importing overwrites the current form. Save first if needed.</div>
+    </div>
+    <div class="guide-section">
+      <h2>Using the AI Assistant</h2>
+      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-body">Open <strong>⋯ → 🤖 AI Interview Prompt</strong> and copy the prompt.</div></div>
+      <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-body">Paste into ChatGPT, Claude, Gemini, or any AI. Have a natural conversation — skip anything you're not sure about.</div></div>
+      <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-body">The AI produces a JSON block. Copy it.</div></div>
+      <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-body">Open <strong>⋯ → 📂 Import → Paste JSON</strong>, paste it in, and click Import.</div></div>
+      <div class="guide-tip">💡 Review imported content carefully — treat it as a first draft.</div>
+    </div>
+    <div class="guide-section">
+      <h2>Other Options (⋯ Menu)</h2>
+      <ul>
+        <li><strong>Dark Mode</strong> — switches to dark colour scheme. Remembered between sessions.</li>
+        <li><strong>Clear Form</strong> — wipes all fields after confirmation.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  MOBILE DRAWER
+// ─────────────────────────────────────────────
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let _draft = {};
+let _actCount = 0;
+
+// ─────────────────────────────────────────────
+//  REPEATER HELPERS
+// ─────────────────────────────────────────────
+function addItem(containerId, bullet, placeholder) {
+  var c = document.getElementById(containerId);
+  var d = document.createElement('div');
+  d.className = 'repeater-item';
+  d.innerHTML =
+    '<span class="repeater-bullet">' + bullet + '</span>' +
+    '<input type="text" placeholder="' + placeholder + '" oninput="tick()">' +
+    '<button class="btn-remove" onclick="removeItem(this)">×</button>';
+  c.appendChild(d);
+}
+
+function removeItem(btn) {
+  var container = btn.closest('.repeater');
+  if (container.children.length > 1) {
+    btn.closest('.repeater-item').remove();
+    tick();
+  }
+}
+
+function getRepeaterValues(id) {
+  var c = document.getElementById(id);
+  if (!c) return [];
+  var inputs = c.querySelectorAll('input[type="text"]');
+  var vals = [];
+  for (var i = 0; i < inputs.length; i++) {
+    var v = inputs[i].value.trim();
+    if (v) vals.push(v);
+  }
+  return vals;
+}
+
+// ─────────────────────────────────────────────
+//  ACTIVITIES
+// ─────────────────────────────────────────────
+function addActivity() {
+  _actCount++;
+  var n = _actCount;
+  var c = document.getElementById('activitiesContainer');
+  var d = document.createElement('div');
+  d.className = 'activity-block';
+  d.id = 'act-' + n;
+  d.innerHTML =
+    '<div class="activity-block-head">' +
+      '<span class="activity-tag">Activity ' + n + '</span>' +
+      '<span style="font-size:12px;color:var(--muted)">Working activity</span>' +
+      '<button class="btn-remove" onclick="removeActivity(\'act-' + n + '\')" style="margin-left:auto">×</button>' +
+    '</div>' +
+    '<div class="activity-block-body">' +
+      '<div class="field-row cols-2">' +
+        '<div class="field"><label class="field-label">Activity Title & Time</label>' +
+          '<input type="text" class="act-title" placeholder="e.g. Activity Name — X Minutes" oninput="tick()"></div>' +
+        '<div class="field"><label class="field-label">Grouping</label>' +
+          '<select class="act-group" oninput="tick()">' +
+            '<option value="">Select...</option>' +
+            '<option>Whole class</option><option>Small groups</option>' +
+            '<option>Pairs</option><option>Individual</option>' +
+          '</select></div>' +
+      '</div>' +
+      '<div class="field"><label class="field-label">Description</label>' +
+        '<textarea class="tall act-desc" placeholder="Describe the activity in detail..." oninput="tick()"></textarea></div>' +
+      '<div class="field"><label class="field-label">Critical Thinking Questions</label>' +
+        '<div class="repeater act-qs">' +
+          '<div class="repeater-item"><span class="repeater-bullet">?</span>' +
+            '<input type="text" placeholder="Enter a critical thinking question..." oninput="tick()">' +
+            '<button class="btn-remove" onclick="removeItem(this)">×</button></div>' +
+        '</div>' +
+        '<button class="btn-add" onclick="addToNearestQs(this)">+ Add Question</button>' +
+      '</div>' +
+    '</div>';
+  c.appendChild(d);
+  tick();
+}
+
+function removeActivity(id) {
+  var el = document.getElementById(id);
+  if (el) { el.remove(); tick(); }
+}
+
+function addToNearestQs(btn) {
+  var body = btn.closest('.activity-block-body');
+  var qs = body.querySelector('.act-qs');
+  var d = document.createElement('div');
+  d.className = 'repeater-item';
+  d.innerHTML =
+    '<span class="repeater-bullet">?</span>' +
+    '<input type="text" placeholder="Enter a critical thinking question..." oninput="tick()">' +
+    '<button class="btn-remove" onclick="removeItem(this)">×</button>';
+  qs.appendChild(d);
+}
+
+function getActivities() {
+  var blocks = document.querySelectorAll('#activitiesContainer .activity-block');
+  var result = [];
+  for (var i = 0; i < blocks.length; i++) {
+    var b = blocks[i];
+    var qs = b.querySelectorAll('.act-qs input[type="text"]');
+    var qArr = [];
+    for (var j = 0; j < qs.length; j++) { if (qs[j].value.trim()) qArr.push(qs[j].value.trim()); }
+    result.push({
+      title: (b.querySelector('.act-title') ? b.querySelector('.act-title').value.trim() : ''),
+      group: (b.querySelector('.act-group') ? b.querySelector('.act-group').value.trim() : ''),
+      desc:  (b.querySelector('.act-desc')  ? b.querySelector('.act-desc').value.trim()  : ''),
+      questions: qArr
+    });
+  }
+  return result;
+}
+
+// ─────────────────────────────────────────────
+//  PROGRESS
+// ─────────────────────────────────────────────
+var REQUIRED = ['teacherName','lessonDate','duration','gradeSubject','lessonTitle',
+  'assessDiagnostic','mindsOnTitle','mindsOnDesc','consolidationTitle','consolidationDesc'];
+
+function tick() {
+  var filled = 0;
+  for (var i = 0; i < REQUIRED.length; i++) {
+    var el = document.getElementById(REQUIRED[i]);
+    if (el && el.value.trim()) filled++;
+  }
+  var pct = Math.round((filled / REQUIRED.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('completionFill').style.width = pct + '%';
+  document.getElementById('completionPct').textContent = pct + '%';
+  updateNavDone();
+}
+
+function updateNavDone() {
+  var map = {
+    '#s1': ['teacherName','lessonDate','duration','gradeSubject'],
+    '#s7': ['mindsOnTitle','mindsOnDesc','consolidationTitle','consolidationDesc'],
+    '#s5': ['assessDiagnostic']
+  };
+  var navItems = document.querySelectorAll('.nav-item');
+  for (var i = 0; i < navItems.length; i++) {
+    var href = navItems[i].getAttribute('href');
+    var ids = map[href];
+    if (ids) {
+      var allFilled = true;
+      for (var j = 0; j < ids.length; j++) {
+        var el = document.getElementById(ids[j]);
+        if (!el || !el.value.trim()) { allFilled = false; break; }
+      }
+      if (allFilled) navItems[i].classList.add('done');
+      else navItems[i].classList.remove('done');
+    }
+  }
+}
+
+function setNav(el) {
+  var navItems = document.querySelectorAll('.nav-item');
+  for (var i = 0; i < navItems.length; i++) navItems[i].classList.remove('active');
+  el.classList.add('active');
+}
+
+// ─────────────────────────────────────────────
+//  DARK MODE
+// ─────────────────────────────────────────────
+function toggleDark() {
+  var isDark = document.body.classList.toggle('dark');
+  var label = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+  document.getElementById('darkItem').textContent = label;
+  document.getElementById('darkItemMob').textContent = label;
+  try { localStorage.setItem('lpDark', isDark ? '1' : '0'); } catch(e) {}
+}
+
+// ─────────────────────────────────────────────
+//  TOAST
+// ─────────────────────────────────────────────
+var _toastT = null;
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastT);
+  _toastT = setTimeout(function() { t.classList.remove('show'); }, 2800);
+}
+
+// ─────────────────────────────────────────────
+//  SAVE / LOAD / CLEAR
+// ─────────────────────────────────────────────
+function collectDraft() {
+  var d = {};
+  var texts = document.querySelectorAll('input[type="text"], textarea, select');
+  for (var i = 0; i < texts.length; i++) {
+    if (texts[i].id) d[texts[i].id] = texts[i].value;
+  }
+  var cbs = document.querySelectorAll('input[type="checkbox"]');
+  for (var i = 0; i < cbs.length; i++) {
+    if (cbs[i].id) d[cbs[i].id + '_chk'] = cbs[i].checked;
+  }
+  return d;
+}
+
+function applyDraft(d) {
+  for (var key in d) {
+    if (key.endsWith('_chk')) {
+      var el = document.getElementById(key.replace('_chk',''));
+      if (el && el.type === 'checkbox') el.checked = d[key];
+    } else {
+      var el = document.getElementById(key);
+      if (el && el.tagName !== 'BUTTON') el.value = d[key];
+    }
+  }
+  tick();
+}
+
+function saveDraft() {
+  _draft = collectDraft();
+  try { localStorage.setItem('lpDraft', JSON.stringify(_draft)); } catch(e) {}
+  var suggested = (document.getElementById('lessonTitle').value || 'lesson-plan')
+    .trim().replace(/[^a-z0-9_\- ]/gi,'').replace(/\s+/g,'_') || 'lesson-plan';
+  document.getElementById('saveFilename').value = suggested;
+  document.getElementById('saveDialog').classList.add('open');
+  setTimeout(function() {
+    var inp = document.getElementById('saveFilename');
+    inp.focus(); inp.select();
+  }, 60);
+}
+
+function closeSaveDialog() {
+  document.getElementById('saveDialog').classList.remove('open');
+}
+
+function confirmSave() {
+  var base = document.getElementById('saveFilename').value.trim() || 'lesson-plan';
+  base = base.replace(/\.(json|docx|txt)$/i, '');
+  var fname = base + '.json';
+  var blob = new Blob([JSON.stringify(_draft, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = fname;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  closeSaveDialog();
+  toast('✓ Saved as ' + fname);
+}
+
+function _clearFields() {
+  var texts = document.querySelectorAll('input[type="text"], input[type="date"], textarea, select');
+  for (var i = 0; i < texts.length; i++) texts[i].value = '';
+  var cbs = document.querySelectorAll('input[type="checkbox"]');
+  for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
+}
+
+function clearAll() {
+  if (!confirm('Clear all form data?')) return;
+  var texts = document.querySelectorAll('input[type="text"], textarea, select');
+  for (var i = 0; i < texts.length; i++) texts[i].value = '';
+  var cbs = document.querySelectorAll('input[type="checkbox"]');
+  for (var i = 0; i < cbs.length; i++) cbs[i].checked = false;
+  tick();
+  toast('Form cleared');
+}
+
+function importFromFile(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var r = new FileReader();
+  r.onload = function(ev) {
+    try {
+      var d = JSON.parse(ev.target.result);
+      _draft = d; applyDraft(d);
+      try { localStorage.setItem('lpDraft', JSON.stringify(d)); } catch(ex) {}
+      closeImportDialog();
+      toast('✓ Imported: ' + file.name);
+    } catch(ex) { toast('⚠ Invalid file: ' + ex.message); }
+  };
+  r.readAsText(file);
+  e.target.value = '';
+}
+
+// ─────────────────────────────────────────────
+//  OVERFLOW MENU
+// ─────────────────────────────────────────────
+function toggleOverflow(e) {
+  e.stopPropagation();
+  document.getElementById('overflowMenu').classList.toggle('open');
+}
+function closeOverflow() {
+  document.getElementById('overflowMenu').classList.remove('open');
+}
+document.addEventListener('click', function() { closeOverflow(); });
+
+function toggleMobPanel() {
+  var panel = document.getElementById('mobPanel');
+  var btn = document.getElementById('mobMenuBtn');
+  var isOpen = panel.classList.toggle('open');
+  btn.textContent = isOpen ? '✕' : '⋯';
+}
+function closeMobPanel() {
+  document.getElementById('mobPanel').classList.remove('open');
+  document.getElementById('mobMenuBtn').textContent = '⋯';
+}
+
+// ─────────────────────────────────────────────
+//  IMPORT DIALOG
+// ─────────────────────────────────────────────
+function openImportDialog() {
+  document.getElementById('importDialog').classList.add('open');
+  switchImportTab('file');
+}
+function closeImportDialog() {
+  document.getElementById('importDialog').classList.remove('open');
+  document.getElementById('pasteArea').value = '';
+  document.getElementById('pasteError').style.display = 'none';
+}
+function switchImportTab(tab) {
+  document.getElementById('tabFile').classList.toggle('active', tab === 'file');
+  document.getElementById('tabPaste').classList.toggle('active', tab === 'paste');
+  document.getElementById('tabTemplate').classList.toggle('active', tab === 'template');
+  document.getElementById('importFilePanel').style.display = tab === 'file' ? 'block' : 'none';
+  document.getElementById('importPastePanel').style.display = tab === 'paste' ? 'block' : 'none';
+  document.getElementById('importTemplatePanel').style.display = tab === 'template' ? 'block' : 'none';
+  var btn = document.getElementById('importConfirmBtn');
+  if (btn) btn.textContent = tab === 'template' ? 'Load Template' : 'Import';
+  if (tab === 'template') renderTemplateList();
+}
+function confirmImport() {
+  var isTemplate = document.getElementById('tabTemplate').classList.contains('active');
+  if (isTemplate) {
+    if (_selectedTemplate === null) { toast('Select a template first'); return; }
+    var all = LC_TEMPLATES.concat(_onlineTemplates);
+    var tpl = all[_selectedTemplate];
+    if (tpl.url && !tpl.data) {
+      // Online template — fetch JSON first
+      var btn = document.getElementById('importConfirmBtn');
+      if (btn) btn.textContent = 'Loading…';
+      fetch(tpl.url)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          tpl.data = data;
+          _clearFields();
+          applyDraft(tpl.data);
+          closeImportDialog();
+          toast('Template loaded: ' + tpl.name);
+        })
+        .catch(function(e) { toast('Failed to load template: ' + e.message); });
+      return;
+    }
+    _clearFields();
+    applyDraft(tpl.data || {});
+    closeImportDialog();
+    toast('Template loaded: ' + tpl.name);
+    return;
+  }
+var isPaste = document.getElementById('tabPaste').classList.contains('active');
+  if (!isPaste) { document.getElementById('importFile').click(); return; }
+  var raw = document.getElementById('pasteArea').value.trim();
+  var errEl = document.getElementById('pasteError');
+  if (!raw) { errEl.textContent = 'Please paste your JSON first.'; errEl.style.display = 'block'; return; }
+  raw = raw.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+  try {
+    var d = JSON.parse(raw);
+    _draft = d; applyDraft(d);
+    try { localStorage.setItem('lpDraft', JSON.stringify(d)); } catch(ex) {}
+    closeImportDialog();
+    toast('✓ Imported from pasted JSON');
+  } catch(ex) {
+    errEl.textContent = '⚠ Could not parse JSON: ' + ex.message;
+    errEl.style.display = 'block';
+  }
+}
+
+// ─────────────────────────────────────────────
+//  USER GUIDE
+// ─────────────────────────────────────────────
+function openGuide() {
+  document.getElementById('guidePanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGuide() {
+  document.getElementById('guidePanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ─────────────────────────────────────────────
+//  AI PROMPT
+// ─────────────────────────────────────────────
+var LLM_PROMPT = [
+  'You are a warm, encouraging assistant helping an Ontario teacher build a lesson plan.',
+  'Your goal is a friendly, natural conversation — not an interrogation.',
+  'Ask one or two questions at a time. If the teacher is unsure, offer suggestions or skip it.',
+  'Reassure them there are no wrong answers.',
+  '',
+  'Once you have enough information, produce the JSON object below.',
+  'Tell the teacher to copy the JSON and paste it into the LessonCraft',
+  'using the ⋯ menu → Import Draft → Paste JSON tab.',
+  '',
+  'Start by introducing yourself warmly and asking what lesson they are working on today.',
+  '',
+  '─── JSON FORMAT (output exactly this structure) ───',
+  '{',
+  '  "teacherName": "",',
+  '  "lessonDate": "YYYY-MM-DD",',
+  '  "duration": "",',
+  '  "gradeSubject": "",',
+  '  "strand": "",',
+  '  "lessonTitle": "",',
+  '  "overallExp": [""],',
+  '  "specificExp": [""],',
+  '  "learningGoals": [""],',
+  '  "successCriteria": [""],',
+  '  "achKnowledge": "",',
+  '  "achThinking": "",',
+  '  "achCommunication": "",',
+  '  "achApplication": "",',
+  '  "assessDiagnostic": "",',
+  '  "assessFormative": "",',
+  '  "assessAs": "",',
+  '  "assessOf": "",',
+  '  "strategies": [""],',
+  '  "assessTools": [""],',
+  '  "priorLearning": "",',
+  '  "differentiation": "",',
+  '  "technology": "",',
+  '  "resources": [""],',
+  '  "mindsOnTitle": "",',
+  '  "mindsOnDesc": "",',
+  '  "mindsOnQs": [""],',
+  '  "consolidationTitle": "",',
+  '  "consolidationDesc": "",',
+  '  "consolidationQs": [""],',
+  '  "skillCollab_chk": false,',
+  '  "skillCollabItems": [""],',
+  '  "skillResponsibility_chk": false,',
+  '  "skillRespItems": [""],',
+  '  "skillSelfReg_chk": false,',
+  '  "skillSelfRegItems": [""],',
+  '  "skillIndep_chk": false,',
+  '  "skillIndepItems": [""],',
+  '  "skillInit_chk": false,',
+  '  "skillInitItems": [""],',
+  '  "skillOrg_chk": false,',
+  '  "skillOrgItems": [""]',
+  '}',
+  '',
+  'Notes:',
+  '• Arrays accept multiple strings. Leave fields as "" if not discussed.',
+  '• lessonDate must be YYYY-MM-DD format.',
+  '• _chk fields: true only if that learning skill is relevant to this lesson.'
+].join('\n');
+
+function openPromptDialog() {
+  document.getElementById('promptBox').textContent = LLM_PROMPT;
+  document.getElementById('promptDialog').classList.add('open');
+}
+function closePromptDialog() {
+  document.getElementById('promptDialog').classList.remove('open');
+}
+function copyPrompt() {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(LLM_PROMPT).then(function() { toast('✓ Prompt copied to clipboard'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = LLM_PROMPT;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    toast('✓ Prompt copied to clipboard');
+  }
+}
+
+// ─────────────────────────────────────────────
+//  EXPORT DOCX
+// ─────────────────────────────────────────────
+function exportDocx() {
+  var raw = document.getElementById('lessonDate') ? document.getElementById('lessonDate').value : '';
+  var title = document.getElementById('lessonTitle') ? document.getElementById('lessonTitle').value.trim() : '';
+  var suggested = (title || 'Lesson_Plan').replace(/[^a-z0-9_\- ]/gi,'').replace(/\s+/g,'_') || 'Lesson_Plan';
+  if (raw) suggested += '_' + raw.replace(/[^a-z0-9]/gi,'_');
+  document.getElementById('exportFilename').value = suggested;
+  document.getElementById('exportDialog').classList.add('open');
+  setTimeout(function() {
+    var inp = document.getElementById('exportFilename');
+    inp.focus(); inp.select();
+  }, 60);
+}
+
+function closeExportDialog() {
+  document.getElementById('exportDialog').classList.remove('open');
+}
+
+function confirmExport() {
+  var base = document.getElementById('exportFilename').value.trim() || 'Lesson_Plan';
+  base = base.replace(/\.(docx|json|txt)$/i, '');
+  var fname = base + '.docx';
+  closeExportDialog();
+  if (typeof docx !== 'undefined') {
+    _buildDocx(fname).catch(function(e) { toast('⚠ Export failed: ' + e.message); console.error(e); });
+    return;
+  }
+  toast('⏳ Loading export library…');
+  var waited = 0;
+  var interval = setInterval(function() {
+    waited += 200;
+    if (typeof docx !== 'undefined') {
+      clearInterval(interval);
+      _buildDocx(fname).catch(function(e) { toast('⚠ Export failed: ' + e.message); console.error(e); });
+    } else if (waited >= 8000) {
+      clearInterval(interval);
+      toast('⚠ Export library failed to load. Check your internet connection.');
+    }
+  }, 200);
+}
+
+async function _buildDocx(fname) {
+  var D = window.docx;
+  if (!D) throw new Error('docx library not available');
+  var { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
+        AlignmentType, BorderStyle, WidthType, ShadingType, VerticalAlign, LevelFormat } = D;
+
+  function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+  var _tc = _themeDocxColors();
+    var NAVY=_tc.NAVY, STEEL=_tc.STEEL, LIGHT=_tc.LIGHT, WHITE=_tc.WHITE;
+  var FW=9360, CL=6400, CR=2960;
+
+  var thin = { style: BorderStyle.SINGLE, size: 4, color: 'C0C8D8' };
+  var allB = { top: thin, bottom: thin, left: thin, right: thin };
+  var noB  = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+  var noBs = { top: noB, bottom: noB, left: noB, right: noB };
+
+  function p(text, opts) {
+    opts = opts || {};
+    return new Paragraph({ spacing: { before: opts.before||40, after: opts.after||60 }, alignment: opts.align||AlignmentType.LEFT,
+      children: [new TextRun({ text: text, size: opts.size||19, font: 'Calibri', bold: opts.bold||false, italics: opts.italic||false, color: opts.color||'000000' })] });
+  }
+  function bul(text) {
+    return new Paragraph({ numbering: { reference: 'bullets', level: 0 }, spacing: { before:40, after:40 },
+      children: [new TextRun({ text: text, size:19, font:'Calibri' })] });
+  }
+  function ctBul(text) {
+    return new Paragraph({ numbering: { reference: 'bullets', level: 0 }, spacing: { before:40, after:40 },
+      children: [new TextRun({ text: text, size:17, font:'Calibri', italics:true })] });
+  }
+  function sp(b) { return new Paragraph({ spacing: { before: b||80, after:0 }, children: [new TextRun('')] }); }
+  function subH(text) {
+    return new Paragraph({ spacing: { before:160, after:60 },
+      children: [new TextRun({ text: text, bold:true, color:STEEL, size:20, font:'Calibri' })] });
+  }
+  function secHdr(text) {
+    return new Table({ width: { size:FW, type:WidthType.DXA }, columnWidths:[FW],
+      rows:[new TableRow({ children:[new TableCell({ borders:noBs, shading:{fill:NAVY,type:ShadingType.CLEAR},
+        margins:{top:100,bottom:100,left:160,right:160}, width:{size:FW,type:WidthType.DXA},
+        children:[new Paragraph({ children:[new TextRun({text:text,bold:true,color:WHITE,size:22,font:'Calibri'})] })] })] })] });
+  }
+  function phaseHdr(text) {
+    return new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:[FW],
+      rows:[new TableRow({ children:[new TableCell({ borders:noBs, shading:{fill:STEEL,type:ShadingType.CLEAR},
+        margins:{top:80,bottom:80,left:160,right:160}, width:{size:FW,type:WidthType.DXA},
+        children:[new Paragraph({ children:[new TextRun({text:text,bold:true,color:WHITE,size:20,font:'Calibri'})] })] })] })] });
+  }
+  function fullBox(children) {
+    return new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:[FW],
+      rows:[new TableRow({ children:[new TableCell({ borders:allB, margins:{top:100,bottom:100,left:160,right:160},
+        width:{size:FW,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP, children:children })] })] });
+  }
+  function twoCol(left, right) {
+    return new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:[CL,CR],
+      rows:[new TableRow({ children:[
+        new TableCell({ borders:allB, margins:{top:100,bottom:100,left:160,right:160}, width:{size:CL,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP, children:left }),
+        new TableCell({ borders:allB, shading:{fill:'F2F5FB',type:ShadingType.CLEAR}, margins:{top:100,bottom:100,left:160,right:160}, width:{size:CR,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP, children:right })
+      ] })] });
+  }
+  function ctCol(qs) {
+    return [new Paragraph({ spacing:{before:0,after:80}, children:[new TextRun({text:'Critical Thinking Questions',bold:true,color:STEEL,size:18,font:'Calibri'})] }), ...qs.map(ctBul)];
+  }
+
+  // Collect data
+  var teacher  = v('teacherName')||'Teacher Name';
+  var date     = (function() {
+    var raw = v('lessonDate');
+    if (!raw) return '';
+    var parts = raw.split('-');
+    if (parts.length !== 3) return raw;
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+    return days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  })();
+  var dur      = v('duration')||'';
+  var grade    = v('gradeSubject')||'';
+  var strand   = v('strand')||'';
+  var title    = v('lessonTitle')||'Lesson Plan';
+  var oes      = getRepeaterValues('overallExp');
+  var ses      = getRepeaterValues('specificExp');
+  var lgs      = getRepeaterValues('learningGoals');
+  var scs      = getRepeaterValues('successCriteria');
+  var strats   = getRepeaterValues('strategies');
+  var tools    = getRepeaterValues('assessTools');
+  var resources= getRepeaterValues('resources');
+  var moQs     = getRepeaterValues('mindsOnQs');
+  var conQs    = getRepeaterValues('consolidationQs');
+  var acts     = getActivities();
+
+  var skillDefs = [
+    { id:'skillCollab',       label:'Collaboration',     items:'skillCollabItems'   },
+    { id:'skillResponsibility',label:'Responsibility',   items:'skillRespItems'     },
+    { id:'skillSelfReg',      label:'Self-Regulation',   items:'skillSelfRegItems'  },
+    { id:'skillIndep',        label:'Independent Work',  items:'skillIndepItems'    },
+    { id:'skillInit',         label:'Initiative',        items:'skillInitItems'     },
+    { id:'skillOrg',          label:'Organization',      items:'skillOrgItems'      }
+  ];
+  var skills = skillDefs.filter(function(s) { var el=document.getElementById(s.id); return el&&el.checked; })
+                        .map(function(s) { return { label:s.label, items:getRepeaterValues(s.items) }; });
+
+  var skillCols = Math.min(skills.length||1, 3);
+  var skillColW = Math.floor(FW/skillCols);
+  var skillColWs = [];
+  for (var i=0;i<skillCols;i++) skillColWs.push(skillColW);
+
+  var children = [
+    // Title block
+    new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:[FW],
+      rows:[new TableRow({ children:[new TableCell({ borders:noBs, shading:{fill:NAVY,type:ShadingType.CLEAR},
+        margins:{top:160,bottom:160,left:200,right:200}, width:{size:FW,type:WidthType.DXA},
+        children:[
+          new Paragraph({ alignment:AlignmentType.CENTER, children:[new TextRun({text:'LESSON PLAN',bold:true,color:WHITE,size:32,font:'Calibri'})] }),
+          new Paragraph({ alignment:AlignmentType.CENTER, children:[new TextRun({text:grade+(strand?' | '+strand:''),color:'C5D3E8',size:20,font:'Calibri'})] }),
+          ...(title?[new Paragraph({ alignment:AlignmentType.CENTER, children:[new TextRun({text:title,color:'A8C0E0',size:18,font:'Calibri',italics:true})] })]:[])
+        ] })] })] }),
+    sp(120),
+    // Info row
+    new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:[3120,3600,2640],
+      rows:[new TableRow({ children:[
+        new TableCell({ borders:allB, shading:{fill:LIGHT,type:ShadingType.CLEAR}, margins:{top:80,bottom:80,left:140,right:140}, width:{size:3120,type:WidthType.DXA},
+          children:[new Paragraph({children:[new TextRun({text:'Teacher',bold:true,size:18,font:'Calibri',color:STEEL})]}), new Paragraph({children:[new TextRun({text:teacher,size:19,font:'Calibri'})]})] }),
+        new TableCell({ borders:allB, shading:{fill:LIGHT,type:ShadingType.CLEAR}, margins:{top:80,bottom:80,left:140,right:140}, width:{size:3600,type:WidthType.DXA},
+          children:[new Paragraph({children:[new TextRun({text:'Date',bold:true,size:18,font:'Calibri',color:STEEL})]}), new Paragraph({children:[new TextRun({text:date,size:19,font:'Calibri'})]})] }),
+        new TableCell({ borders:allB, shading:{fill:LIGHT,type:ShadingType.CLEAR}, margins:{top:80,bottom:80,left:140,right:140}, width:{size:2640,type:WidthType.DXA},
+          children:[new Paragraph({children:[new TextRun({text:'Duration',bold:true,size:18,font:'Calibri',color:STEEL})]}), new Paragraph({children:[new TextRun({text:dur,size:19,font:'Calibri'})]})] })
+      ] })] }),
+    sp(200),
+    // Curriculum
+    secHdr('CURRICULUM CONNECTIONS & ASSESSMENT'), sp(80),
+    fullBox([subH('Overall Expectations'), ...oes.map(bul), sp(80), subH('Specific Expectations'), ...ses.map(bul)]),
+    sp(200),
+    // Goals / Criteria
+    new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:[4680,4680],
+      rows:[
+        new TableRow({ children:[
+          new TableCell({ borders:noBs, shading:{fill:NAVY,type:ShadingType.CLEAR}, margins:{top:80,bottom:80,left:160,right:160}, width:{size:4680,type:WidthType.DXA},
+            children:[new Paragraph({children:[new TextRun({text:'LEARNING GOALS',bold:true,color:WHITE,size:20,font:'Calibri'})]})] }),
+          new TableCell({ borders:noBs, shading:{fill:STEEL,type:ShadingType.CLEAR}, margins:{top:80,bottom:80,left:160,right:160}, width:{size:4680,type:WidthType.DXA},
+            children:[new Paragraph({children:[new TextRun({text:'SUCCESS CRITERIA',bold:true,color:WHITE,size:20,font:'Calibri'})]})] })
+        ]}),
+        new TableRow({ children:[
+          new TableCell({ borders:allB, margins:{top:100,bottom:100,left:160,right:160}, width:{size:4680,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP, children:lgs.map(bul) }),
+          new TableCell({ borders:allB, margins:{top:100,bottom:100,left:160,right:160}, width:{size:4680,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP, children:[p('Students will know they are successful when they can:'), ...scs.map(bul)] })
+        ]})
+      ] }),
+    sp(200),
+    // Achievement chart
+    secHdr('ACHIEVEMENT CHART'), sp(80),
+    new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:[2340,2340,2340,2340],
+      rows:[
+        new TableRow({ children:['Knowledge & Understanding','Thinking','Communication','Application'].map(function(h) {
+          return new TableCell({ borders:allB, shading:{fill:LIGHT,type:ShadingType.CLEAR}, margins:{top:80,bottom:80,left:120,right:120}, width:{size:2340,type:WidthType.DXA},
+            children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:h,bold:true,size:18,font:'Calibri',color:NAVY})]})] });
+        }) }),
+        new TableRow({ children:[v('achKnowledge'),v('achThinking'),v('achCommunication'),v('achApplication')].map(function(t) {
+          return new TableCell({ borders:allB, margins:{top:80,bottom:80,left:120,right:120}, width:{size:2340,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP,
+            children:[new Paragraph({children:[new TextRun({text:t,size:18,font:'Calibri'})]})] });
+        }) })
+      ] }),
+    sp(200),
+    // Assessment
+    secHdr('ASSESSMENT'), sp(80),
+    fullBox([subH('Diagnostic Assessment'),p(v('assessDiagnostic')),sp(80),subH('Assessment for Learning (Formative)'),p(v('assessFormative')),sp(80),subH('Assessment as Learning'),p(v('assessAs')),sp(80),subH('Assessment of Learning'),p(v('assessOf'))]),
+    sp(120),
+    fullBox([subH('Instructional Strategies'),...strats.map(bul),sp(80),subH('Assessment Tools'),...tools.map(bul)]),
+    sp(200),
+    // Planning
+    secHdr('CONSIDERATIONS FOR PLANNING'), sp(80),
+    fullBox([subH('Prior Learning'),p(v('priorLearning'))]),
+    sp(120),
+    fullBox([subH('Differentiation / Accommodations & Modifications (IEP / ELL)'),p(v('differentiation'))]),
+    sp(120),
+    new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:[4680,4680],
+      rows:[new TableRow({ children:[
+        new TableCell({ borders:allB, margins:{top:100,bottom:100,left:160,right:160}, width:{size:4680,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP, children:[subH('Technology'),p(v('technology'))] }),
+        new TableCell({ borders:allB, margins:{top:100,bottom:100,left:160,right:160}, width:{size:4680,type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP, children:[subH('Resources'),...resources.map(bul)] })
+      ] })] }),
+    sp(200),
+    // Three-part lesson
+    secHdr('THREE-PART LESSON'), sp(80),
+    phaseHdr('MINDS ON  |  Motivational Hook / Introduction'),
+    twoCol(
+      [new Paragraph({spacing:{before:0,after:60},children:[new TextRun({text:v('mindsOnTitle'),bold:true,size:20,color:NAVY,font:'Calibri'})]}), p(v('mindsOnDesc'))],
+      ctCol(moQs)
+    ),
+    sp(160),
+    phaseHdr('ACTION  |  Working on It (approx. 60%)'),
+    ...acts.map(function(a) {
+      return twoCol(
+        [new Paragraph({spacing:{before:0,after:60},children:[new TextRun({text:a.title+(a.group?' | '+a.group:''),bold:true,size:20,color:NAVY,font:'Calibri'})]}), p(a.desc)],
+        ctCol(a.questions)
+      );
+    }),
+    sp(160),
+    phaseHdr('CONSOLIDATION  |  Reflect, Connect & Assess (approx. 10–20%)'),
+    twoCol(
+      [new Paragraph({spacing:{before:0,after:60},children:[new TextRun({text:v('consolidationTitle'),bold:true,size:20,color:NAVY,font:'Calibri'})]}),
+       p(v('consolidationDesc'))],
+      ctCol(conQs)
+    ),
+    sp(200)
+  ];
+
+  // Learning skills table
+  if (skills.length > 0) {
+    children.push(secHdr('LEARNING SKILLS'), sp(80));
+    var hCells = skills.slice(0,skillCols).map(function(s,i) {
+      return new TableCell({ borders:allB, shading:{fill:LIGHT,type:ShadingType.CLEAR}, margins:{top:80,bottom:80,left:140,right:140}, width:{size:skillColWs[i],type:WidthType.DXA},
+        children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:s.label,bold:true,size:19,font:'Calibri',color:NAVY})]})] });
+    });
+    var bCells = skills.slice(0,skillCols).map(function(s,i) {
+      return new TableCell({ borders:allB, margins:{top:80,bottom:80,left:140,right:140}, width:{size:skillColWs[i],type:WidthType.DXA}, verticalAlign:VerticalAlign.TOP, children:s.items.map(bul) });
+    });
+    children.push(new Table({ width:{size:FW,type:WidthType.DXA}, columnWidths:skillColWs, rows:[new TableRow({children:hCells}),new TableRow({children:bCells})] }));
+    children.push(sp(200));
+  }
+
+  // Next steps
+  children.push(secHdr('NEXT STEPS & LESSON REFLECTION'), sp(80), fullBox([sp(80),p(''),sp(160),p(''),sp(160),p(''),sp(80)]));
+
+  var doc = new Document({
+    numbering: { config: [{ reference:'bullets', levels:[{ level:0, format:LevelFormat.BULLET, text:'\u2022', alignment:AlignmentType.LEFT, style:{ paragraph:{ indent:{ left:480, hanging:280 } } } }] }] },
+    styles: { default: { document: { run: { font:'Calibri', size:19 } } } },
+    sections: [{ properties:{ page:{ size:{ width:12240, height:15840 }, margin:{ top:1080, right:1080, bottom:1080, left:1080 } } }, children:children }]
+  });
+
+  var blob = await Packer.toBlob(doc);
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href = url;
+  a.download = fname || 'Lesson_Plan.docx';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('✓ Lesson plan exported!');
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// LESSONCRAFT v2.0 — DATA-DRIVEN SECTIONS
+// ═══════════════════════════════════════════════════════════════
+
+// Section body HTML — keyed by section id
+var LC_SECTION_BODIES = {
+  s1: `
+    <div class="field-row cols-3">
+      <div class="field">
+        <label class="field-label">Teacher Name <span class="required">*</span></label>
+        <input type="text" id="teacherName" placeholder="e.g. Ms. Anita Griffith" oninput="tick()">
+      </div>
+      <div class="field">
+        <label class="field-label">Date <span class="required">*</span></label>
+        <input type="date" id="lessonDate" oninput="tick()">
+      </div>
+      <div class="field">
+        <label class="field-label">Duration <span class="required">*</span></label>
+        <input type="text" id="duration" placeholder="e.g. 75 Minutes" oninput="tick()">
+      </div>
+    </div>
+    <div class="field-row cols-2">
+      <div class="field">
+        <label class="field-label">Grade &amp; Subject <span class="required">*</span></label>
+        <input type="text" id="gradeSubject" placeholder="e.g. Grade 10 Careers — GLC2O1" oninput="tick()">
+      </div>
+      <div class="field">
+        <label class="field-label">Curriculum Strand</label>
+        <input type="text" id="strand" placeholder="e.g. Financial Literacy" oninput="tick()">
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">Lesson Topic / Title <span class="required">*</span></label>
+      <input type="text" id="lessonTitle" placeholder="e.g. Needs vs. Wants — Understanding Financial Priorities" oninput="tick()">
+    </div>`,
+
+  s2: `
+    <div class="field">
+      <label class="field-label">Overall Expectations <span class="required">*</span></label>
+      <div class="field-hint">Broad curriculum expectations this lesson addresses. Use the code from the curriculum document.</div>
+      <div class="repeater" id="overallExp">
+        <div class="repeater-item">
+          <span class="repeater-bullet">•</span>
+          <input type="text" placeholder="e.g. A1 — Demonstrate an understanding of how personal choices affect future opportunities" oninput="tick()">
+          <button class="btn-remove" onclick="removeItem(this)">×</button>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addItem('overallExp','•','e.g. B1 — Analyze the relationship between personal lifestyle choices and financial planning')">+ Add Expectation</button>
+    </div>
+    <hr class="divider">
+    <div class="field">
+      <label class="field-label">Specific Expectations <span class="required">*</span></label>
+      <div class="field-hint">Specific, measurable expectations directly supporting your learning goals.</div>
+      <div class="repeater" id="specificExp">
+        <div class="repeater-item">
+          <span class="repeater-bullet">•</span>
+          <input type="text" placeholder="e.g. B1.2 — Identify how personal values and priorities influence financial choices" oninput="tick()">
+          <button class="btn-remove" onclick="removeItem(this)">×</button>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addItem('specificExp','•','e.g. B2.1 — Distinguish between needs and wants when making financial decisions')">+ Add Expectation</button>
+    </div>`,
+
+  s3: `
+    <div class="field">
+      <label class="field-label">Learning Goals <span class="required">*</span></label>
+      <div class="field-hint">Write as "We are learning to…" statements. Student-friendly language. Aim for 2–4 goals.</div>
+      <div class="repeater" id="learningGoals">
+        <div class="repeater-item">
+          <span class="repeater-bullet">•</span>
+          <input type="text" placeholder="e.g. Define the terms needs and wants" oninput="tick()">
+          <button class="btn-remove" onclick="removeItem(this)">×</button>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addItem('learningGoals','•','e.g. Explain how understanding needs and wants impacts financial decisions')">+ Add Goal</button>
+    </div>
+    <hr class="divider">
+    <div class="field">
+      <label class="field-label">Success Criteria <span class="required">*</span></label>
+      <div class="field-hint">Write as "I can…" statements — observable, specific, and achievable.</div>
+      <div class="repeater" id="successCriteria">
+        <div class="repeater-item">
+          <span class="repeater-bullet">•</span>
+          <input type="text" placeholder='e.g. I can clearly explain the difference between a need and a want' oninput="tick()">
+          <button class="btn-remove" onclick="removeItem(this)">×</button>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addItem('successCriteria','•','e.g. I can explain how needs and wants affect financial decisions and budgeting')">+ Add Criterion</button>
+    </div>`,
+
+  s4: `
+    <div class="field-row cols-2">
+      <div class="field">
+        <label class="field-label">Knowledge &amp; Understanding</label>
+        <textarea id="achKnowledge" placeholder="e.g. Students demonstrate understanding of needs, wants, and budgeting." oninput="tick()"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">Thinking</label>
+        <textarea id="achThinking" placeholder="e.g. Students analyze spending situations and determine essential vs. non-essential expenses." oninput="tick()"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">Communication</label>
+        <textarea id="achCommunication" placeholder="e.g. Students explain and justify financial decisions during class discussions." oninput="tick()"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">Application</label>
+        <textarea id="achApplication" placeholder="e.g. Students apply needs vs. wants concepts to real-life budgeting scenarios." oninput="tick()"></textarea>
+      </div>
+    </div>`,
+
+  s5: `
+    <div class="field">
+      <label class="field-label">Diagnostic Assessment <span class="required">*</span></label>
+      <div class="field-hint">What prior knowledge activity tells you what students already know before instruction begins?</div>
+      <textarea id="assessDiagnostic" placeholder="Describe the activity used to gauge prior knowledge..." oninput="tick()"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Assessment for Learning (Formative)</label>
+      <div class="field-hint">How will you check understanding during the lesson? Observation, questioning, circulating?</div>
+      <textarea id="assessFormative" placeholder="Describe formative assessment strategies used during the lesson..." oninput="tick()"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Assessment as Learning</label>
+      <div class="field-hint">How will students self-assess or peer-assess during the lesson?</div>
+      <textarea id="assessAs" placeholder="Describe how students will reflect on and monitor their own learning..." oninput="tick()"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Assessment of Learning (Summative)</label>
+      <div class="field-hint">What product or demonstration will show mastery?</div>
+      <textarea id="assessOf" placeholder="Describe how final understanding will be demonstrated..." oninput="tick()"></textarea>
+    </div>
+    <hr class="divider">
+    <div class="field">
+      <label class="field-label">Instructional Strategies</label>
+      <div class="repeater" id="strategies">
+        <div class="repeater-item">
+          <span class="repeater-bullet">•</span>
+          <input type="text" placeholder="e.g. Small group sorting activity" oninput="tick()">
+          <button class="btn-remove" onclick="removeItem(this)">×</button>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addItem('strategies','•','e.g. Whole class consolidation discussion and reflection')">+ Add Strategy</button>
+    </div>
+    <div class="field">
+      <label class="field-label">Assessment Tools</label>
+      <div class="repeater" id="assessTools">
+        <div class="repeater-item">
+          <span class="repeater-bullet">•</span>
+          <input type="text" placeholder="e.g. Teacher observation checklist during group work" oninput="tick()">
+          <button class="btn-remove" onclick="removeItem(this)">×</button>
+        </div>
+      </div>
+      <button class="btn-add" onclick="addItem('assessTools','•','e.g. Anecdotal notes recorded while circulating')">+ Add Tool</button>
+    </div>`,
+
+  s6: `
+    <div class="field">
+      <label class="field-label">Prior Learning</label>
+      <div class="field-hint">What do students already know that connects to this lesson?</div>
+      <textarea id="priorLearning" placeholder="Describe relevant prior learning and background knowledge..." oninput="tick()"></textarea>
+    </div>
+    <div class="field">
+      <label class="field-label">Differentiation / Accommodations &amp; Modifications (IEP / ELL)</label>
+      <div class="field-hint">Specific accommodations for IEP and ELL students — changes to instruction, materials, or tasks.</div>
+      <textarea class="tall" id="differentiation" placeholder="Describe your class profile and specific accommodations/modifications in place..." oninput="tick()"></textarea>
+    </div>
+    <div class="field-row cols-2">
+      <div class="field">
+        <label class="field-label">Technology</label>
+        <textarea class="short" id="technology" placeholder="e.g. PowerPoint presentation displayed via projector" oninput="tick()"></textarea>
+      </div>
+      <div class="field">
+        <label class="field-label">Resources &amp; Materials</label>
+        <div class="repeater" id="resources">
+          <div class="repeater-item">
+            <span class="repeater-bullet">•</span>
+            <input type="text" placeholder="e.g. Sorting cards" oninput="tick()">
+            <button class="btn-remove" onclick="removeItem(this)">×</button>
+          </div>
+        </div>
+        <button class="btn-add" onclick="addItem('resources','•','e.g. Scenario handouts')">+ Add Resource</button>
+      </div>
+    </div>`,
+
+  s7: `
+    <div class="phase-header">
+      <span>🧠 MINDS ON</span>
+      <span class="phase-badge">Motivational Hook / Introduction</span>
+    </div>
+    <div class="activity-block">
+      <div class="activity-block-head">
+        <span class="activity-tag">Hook Activity</span>
+        <span style="font-size:12px;color:var(--muted)">Engage students &amp; activate prior knowledge</span>
+      </div>
+      <div class="activity-block-body">
+        <div class="field">
+          <label class="field-label">Activity Name &amp; Time <span class="required">*</span></label>
+          <input type="text" id="mindsOnTitle" placeholder="e.g. Survival Budget Activity — 5 Minutes" oninput="tick()">
+        </div>
+        <div class="field">
+          <label class="field-label">Activity Description <span class="required">*</span></label>
+          <div class="field-hint">Describe exactly what students do, the scenario given, materials needed, and what the teacher does.</div>
+          <textarea class="tall" id="mindsOnDesc" placeholder="Describe the hook activity in detail..." oninput="tick()"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Guiding / Critical Thinking Questions</label>
+          <div class="repeater" id="mindsOnQs">
+            <div class="repeater-item">
+              <span class="repeater-bullet">?</span>
+              <input type="text" placeholder="e.g. If you only have a limited amount of money, how do you decide what to spend it on first?" oninput="tick()">
+              <button class="btn-remove" onclick="removeItem(this)">×</button>
+            </div>
+          </div>
+          <button class="btn-add" onclick="addItem('mindsOnQs','?','e.g. Can something that is usually a want ever become a need?')">+ Add Question</button>
+        </div>
+      </div>
+    </div>
+    <div class="phase-header" style="margin-top:10px">
+      <span>⚙️ ACTION</span>
+      <span class="phase-badge">Working on It — approx. 60% of lesson time</span>
+    </div>
+    <div id="activitiesContainer"></div>
+    <button class="btn btn-secondary" onclick="addActivity()" style="width:100%;justify-content:center">+ Add Activity</button>
+    <div class="phase-header" style="margin-top:10px">
+      <span>🔁 CONSOLIDATION</span>
+      <span class="phase-badge">Reflect, Connect &amp; Assess — approx. 10–20%</span>
+    </div>
+    <div class="activity-block">
+      <div class="activity-block-head">
+        <span class="activity-tag">Wrap-Up</span>
+        <span style="font-size:12px;color:var(--muted)">Bring learning together &amp; check for understanding</span>
+      </div>
+      <div class="activity-block-body">
+        <div class="field">
+          <label class="field-label">Consolidation Activity &amp; Time <span class="required">*</span></label>
+          <input type="text" id="consolidationTitle" placeholder="e.g. Class Reflection &amp; Discussion — 5 Minutes" oninput="tick()">
+        </div>
+        <div class="field">
+          <label class="field-label">Description <span class="required">*</span></label>
+          <textarea class="tall" id="consolidationDesc" placeholder="Describe the consolidation activity and how you will check for understanding..." oninput="tick()"></textarea>
+        </div>
+        <div class="field">
+          <label class="field-label">Reflection Questions</label>
+          <div class="repeater" id="consolidationQs">
+            <div class="repeater-item">
+              <span class="repeater-bullet">?</span>
+              <input type="text" placeholder="e.g. Did your understanding of this topic change today? If so, how?" oninput="tick()">
+              <button class="btn-remove" onclick="removeItem(this)">×</button>
+            </div>
+          </div>
+          <button class="btn-add" onclick="addItem('consolidationQs','?','e.g. What is one strategy you could use to apply what you learned today?')">+ Add Question</button>
+        </div>
+      </div>
+    </div>`,
+
+  s8: `
+    <div class="field-hint">Select the learning skills demonstrated in this lesson and add student-facing "I can" criteria. Focus on 2–3 skills.</div>
+    <div class="field-row cols-3">
+      <div class="field skill-col">
+        <label class="field-label"><input type="checkbox" id="skillCollab" onchange="tick()"> Collaboration</label>
+        <div class="repeater" id="skillCollabItems">
+          <div class="repeater-item"><span class="repeater-bullet">•</span><input type="text" placeholder='e.g. I can work respectfully with group members' oninput="tick()"><button class="btn-remove" onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="btn-add" onclick="addItem('skillCollabItems','•','e.g. I can listen to others and contribute my own ideas')">+ Add</button>
+      </div>
+      <div class="field skill-col">
+        <label class="field-label"><input type="checkbox" id="skillResponsibility" onchange="tick()"> Responsibility</label>
+        <div class="repeater" id="skillRespItems">
+          <div class="repeater-item"><span class="repeater-bullet">•</span><input type="text" placeholder="e.g. I can stay on task and complete activities" oninput="tick()"><button class="btn-remove" onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="btn-add" onclick="addItem('skillRespItems','•','e.g. I can participate and contribute to group tasks')">+ Add</button>
+      </div>
+      <div class="field skill-col">
+        <label class="field-label"><input type="checkbox" id="skillSelfReg" onchange="tick()"> Self-Regulation</label>
+        <div class="repeater" id="skillSelfRegItems">
+          <div class="repeater-item"><span class="repeater-bullet">•</span><input type="text" placeholder="e.g. I can reflect on my choices and explain my thinking" oninput="tick()"><button class="btn-remove" onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="btn-add" onclick="addItem('skillSelfRegItems','•','e.g. I can adjust my thinking when new information is shared')">+ Add</button>
+      </div>
+      <div class="field skill-col">
+        <label class="field-label"><input type="checkbox" id="skillIndep" onchange="tick()"> Independent Work</label>
+        <div class="repeater" id="skillIndepItems">
+          <div class="repeater-item"><span class="repeater-bullet">•</span><input type="text" placeholder="e.g. I can work independently without reminders" oninput="tick()"><button class="btn-remove" onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="btn-add" onclick="addItem('skillIndepItems','•','e.g. I can use my time effectively to complete work')">+ Add</button>
+      </div>
+      <div class="field skill-col">
+        <label class="field-label"><input type="checkbox" id="skillInit" onchange="tick()"> Initiative</label>
+        <div class="repeater" id="skillInitItems">
+          <div class="repeater-item"><span class="repeater-bullet">•</span><input type="text" placeholder="e.g. I can ask for help when I need it" oninput="tick()"><button class="btn-remove" onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="btn-add" onclick="addItem('skillInitItems','•','e.g. I can take on challenges and try new approaches')">+ Add</button>
+      </div>
+      <div class="field skill-col">
+        <label class="field-label"><input type="checkbox" id="skillOrg" onchange="tick()"> Organization</label>
+        <div class="repeater" id="skillOrgItems">
+          <div class="repeater-item"><span class="repeater-bullet">•</span><input type="text" placeholder="e.g. I can keep my work organized and easy to find" oninput="tick()"><button class="btn-remove" onclick="removeItem(this)">×</button></div>
+        </div>
+        <button class="btn-add" onclick="addItem('skillOrgItems','•','e.g. I can manage my materials and time effectively')">+ Add</button>
+      </div>
+    </div>`
+};
+
+// ─── Layout config ───
+var LC_DEFAULT_LAYOUT = [
+  { id:'s1', title:'Lesson Information',             subtitle:'Basic metadata — who, what, when, and how long',                        visible:true, builtin:true },
+  { id:'s2', title:'Curriculum Connections',         subtitle:'Link your lesson to Ontario curriculum expectations',                   visible:true, builtin:true },
+  { id:'s3', title:'Learning Goals & Success Criteria', subtitle:'What students will learn and how they\'ll know they\'ve succeeded',  visible:true, builtin:true },
+  { id:'s4', title:'Achievement Chart',              subtitle:'How the four categories of thinking are addressed',                     visible:true, builtin:true },
+  { id:'s5', title:'Assessment',                     subtitle:'Diagnostic, formative, and summative strategies',                      visible:true, builtin:true },
+  { id:'s6', title:'Considerations for Planning',    subtitle:'Prior knowledge, differentiation, technology, and resources',          visible:true, builtin:true },
+  { id:'s7', title:'Three-Part Lesson',              subtitle:'Minds On → Action → Consolidation',                                    visible:true, builtin:true },
+  { id:'s8', title:'Learning Skills',                subtitle:'Observable behaviours and student-facing success criteria',            visible:true, builtin:true }
+];
+
+var _layout = null;
+var _customSectionCounter = 0;
+
+function _loadLayout() {
+  try {
+    var raw = localStorage.getItem('lcLayout');
+    if (raw) {
+      var saved = JSON.parse(raw);
+      // Merge: preserve built-in section bodies, restore titles/visibility from saved
+      var builtinMap = {};
+      LC_DEFAULT_LAYOUT.forEach(function(s) { builtinMap[s.id] = s; });
+      _layout = saved.map(function(s) {
+        if (s.builtin && builtinMap[s.id]) {
+          return Object.assign({}, builtinMap[s.id], { title: s.title, subtitle: s.subtitle, visible: s.visible });
+        }
+        return s; // custom section
+      });
+      // Append any new built-in sections not in saved layout
+      LC_DEFAULT_LAYOUT.forEach(function(d) {
+        if (!_layout.find(function(s) { return s.id === d.id; })) {
+          _layout.push(Object.assign({}, d));
+        }
+      });
+      return;
+    }
+  } catch(e) {}
+  _layout = LC_DEFAULT_LAYOUT.map(function(s) { return Object.assign({}, s); });
+}
+
+function _saveLayout() {
+  try { localStorage.setItem('lcLayout', JSON.stringify(_layout)); } catch(e) {}
+}
+
+function renderSections() {
+  var container = document.getElementById('sectionContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  var visIdx = 0;
+  _layout.forEach(function(sec) {
+    if (!sec.visible) return;
+    visIdx++;
+    var card = document.createElement('div');
+    card.className = 'section-card';
+    card.id = sec.id;
+    card.style.scrollMarginTop = '80px';
+    var bodyHtml = sec.builtin ? (LC_SECTION_BODIES[sec.id] || '') : (sec.customBody || '<div class="field"><textarea placeholder="Add your notes here..." oninput="tick()" style="min-height:120px"></textarea></div>');
+    card.innerHTML =
+      '<div class="section-head">' +
+        '<div class="section-head-num">' + visIdx + '</div>' +
+        '<div><h2>' + _esc(sec.title) + '</h2>' +
+        (sec.subtitle ? '<p>' + _esc(sec.subtitle) + '</p>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="section-body">' + bodyHtml + '</div>';
+    container.appendChild(card);
+  });
+  rebuildNav();
+  // Re-attach scroll spy
+  _attachScrollSpy();
+}
+
+function _esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function rebuildNav() {
+  var visibleSecs = _layout.filter(function(s){ return s.visible; });
+  var navHtml = visibleSecs.map(function(s, i) {
+    return '<a class="nav-item' + (i===0?' active':'') + '" href="#' + s.id + '" onclick="setNav(this)">' +
+      '<span class="nav-num">' + (i+1) + '</span> ' + _esc(s.title.length > 14 ? s.title.substring(0,14)+'…' : s.title) +
+      ' <span class="nav-check">✓</span></a>';
+  }).join('');
+  var drawerNavHtml = visibleSecs.map(function(s, i) {
+    return '<a class="nav-item' + (i===0?' active':'') + '" href="#' + s.id + '" onclick="setNav(this);closeDrawer()">' +
+      '<span class="nav-num">' + (i+1) + '</span> ' + _esc(s.title.length > 16 ? s.title.substring(0,16)+'…' : s.title) +
+      ' <span class="nav-check">✓</span></a>';
+  }).join('');
+  var sidebar = document.querySelector('.sidebar');
+  if (sidebar) {
+    sidebar.innerHTML = '<div class="sidebar-label">Sections</div>' + navHtml;
+  }
+  var drawer = document.getElementById('drawer');
+  if (drawer) {
+    var drawerHeader = drawer.querySelector('.drawer-header');
+    drawer.innerHTML = '';
+    if (drawerHeader) drawer.appendChild(drawerHeader);
+    drawer.insertAdjacentHTML('beforeend', drawerNavHtml);
+  }
+}
+
+function _attachScrollSpy() {
+  var sections = document.querySelectorAll('.section-card[id]');
+  if (window._lcScrollObserver) window._lcScrollObserver.disconnect();
+  window._lcScrollObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = '#' + entry.target.id;
+        document.querySelectorAll('.nav-item').forEach(function(n) {
+          n.classList.toggle('active', n.getAttribute('href') === id);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(function(s) { window._lcScrollObserver.observe(s); });
+}
+
+// ─── Layout save/export integration ───
+var _origCollectDraft = null;
+function _patchCollectDraft() {
+  // Monkey-patch collectDraft to include _layout
+  var orig = collectDraft;
+  collectDraft = function() {
+    var d = orig();
+    d.__layout = JSON.stringify(_layout);
+    return d;
+  };
+}
+
+var _origApplyDraft = null;
+function _patchApplyDraft() {
+  var orig = applyDraft;
+  applyDraft = function(d) {
+    if (d.__layout) {
+      try {
+        var importedLayout = JSON.parse(d.__layout);
+        _layout = importedLayout;
+        _saveLayout();
+        renderSections();
+        // Need to wait a tick for DOM to be ready
+        setTimeout(function() { orig(d); }, 10);
+        return;
+      } catch(e) {}
+    }
+    orig(d);
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// EDIT LAYOUT OVERLAY
+// ═══════════════════════════════════════════════════════════════
+
+function openEditLayout() {
+  closeOverflow();
+  _renderLayoutEditor();
+  document.getElementById('editLayoutOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeEditLayout() {
+  document.getElementById('editLayoutOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function _renderLayoutEditor() {
+  var list = document.getElementById('elSectionList');
+  list.innerHTML = _layout.map(function(sec, i) {
+    return '<div class="el-row" data-idx="' + i + '" draggable="true" ' +
+      'ondragstart="elDragStart(event,'+i+')" ondragover="elDragOver(event,'+i+')" ondrop="elDrop(event,'+i+')">' +
+      '<span class="el-handle">⠿</span>' +
+      '<div class="el-row-body">' +
+        '<input class="el-title-input" type="text" value="' + _esc(sec.title) + '" ' +
+          'onchange="elRenameTitle('+i+',this.value)" placeholder="Section title">' +
+        '<input class="el-subtitle-input" type="text" value="' + _esc(sec.subtitle||'') + '" ' +
+          'onchange="elRenameSubtitle('+i+',this.value)" placeholder="Subtitle (optional)">' +
+      '</div>' +
+      '<div class="el-row-actions">' +
+        '<button class="el-btn el-vis" onclick="elToggleVis('+i+')" title="' + (sec.visible?'Hide':'Show') + '">' + (sec.visible?'👁':'○') + '</button>' +
+        '<button class="el-btn" onclick="elMoveUp('+i+')" title="Move up" ' + (i===0?'disabled':'') + '>↑</button>' +
+        '<button class="el-btn" onclick="elMoveDown('+i+')" title="Move down" ' + (i===_layout.length-1?'disabled':'') + '>↓</button>' +
+        (!sec.builtin ? '<button class="el-btn el-del" onclick="elDeleteCustom('+i+')" title="Delete section">🗑</button>' : '<span class="el-builtin-badge">built-in</span>') +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+var _elDragSrc = null;
+
+function elDragStart(e, idx) {
+  _elDragSrc = idx;
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function elDragOver(e, idx) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+}
+
+function elDrop(e, idx) {
+  e.preventDefault();
+  if (_elDragSrc === null || _elDragSrc === idx) return;
+  var moved = _layout.splice(_elDragSrc, 1)[0];
+  _layout.splice(idx, 0, moved);
+  _elDragSrc = null;
+  _saveLayout();
+  _renderLayoutEditor();
+}
+
+function elRenameTitle(idx, val) {
+  _layout[idx].title = val;
+}
+
+function elRenameSubtitle(idx, val) {
+  _layout[idx].subtitle = val;
+}
+
+function elToggleVis(idx) {
+  _layout[idx].visible = !_layout[idx].visible;
+  _saveLayout();
+  _renderLayoutEditor();
+}
+
+function elMoveUp(idx) {
+  if (idx === 0) return;
+  var tmp = _layout[idx-1]; _layout[idx-1] = _layout[idx]; _layout[idx] = tmp;
+  _saveLayout();
+  _renderLayoutEditor();
+}
+
+function elMoveDown(idx) {
+  if (idx === _layout.length-1) return;
+  var tmp = _layout[idx+1]; _layout[idx+1] = _layout[idx]; _layout[idx] = tmp;
+  _saveLayout();
+  _renderLayoutEditor();
+}
+
+function elAddCustomSection() {
+  _customSectionCounter++;
+  var id = 'sc_custom_' + Date.now();
+  _layout.push({
+    id: id,
+    title: 'Custom Section',
+    subtitle: '',
+    visible: true,
+    builtin: false,
+    customBody: ''
+  });
+  _renderLayoutEditor();
+}
+
+function elDeleteCustom(idx) {
+  if (!confirm('Delete this section? Any data in it will be lost.')) return;
+  _layout.splice(idx, 1);
+  _renderLayoutEditor();
+}
+
+function elApplyLayout() {
+  _saveLayout();
+  renderSections();
+  // Re-apply draft values (fields re-rendered)
+  try {
+    var raw = localStorage.getItem('lpDraft');
+    if (raw) { var d = JSON.parse(raw); applyDraft(d); }
+  } catch(e) {}
+  closeEditLayout();
+  toast('✓ Layout applied');
+}
+
+function elResetLayout() {
+  if (!confirm('Reset layout to default? Custom sections will be removed.')) return;
+  _layout = LC_DEFAULT_LAYOUT.map(function(s) { return Object.assign({}, s); });
+  _saveLayout();
+  renderSections();
+  try {
+    var raw = localStorage.getItem('lpDraft');
+    if (raw) { var d = JSON.parse(raw); applyDraft(d); }
+  } catch(e) {}
+  closeEditLayout();
+  toast('Layout reset to default');
+}
+
+// ─── Save layout as named template ───
+function elSaveTemplate() {
+  document.getElementById('elTplNameWrap').style.display = 'flex';
+  document.getElementById('elTplNameInput').focus();
+}
+
+function elConfirmSaveTemplate() {
+  var name = document.getElementById('elTplNameInput').value.trim();
+  if (!name) { toast('Enter a template name'); return; }
+  try {
+    var stored = JSON.parse(localStorage.getItem('lcLayoutTemplates') || '[]');
+    stored.push({ name: name, layout: JSON.parse(JSON.stringify(_layout)), savedAt: Date.now() });
+    localStorage.setItem('lcLayoutTemplates', JSON.stringify(stored));
+    toast('✓ Layout saved as "' + name + '"');
+    document.getElementById('elTplNameWrap').style.display = 'none';
+    document.getElementById('elTplNameInput').value = '';
+  } catch(e) { toast('Failed to save template: ' + e.message); }
+}
+
+function elCancelSaveTemplate() {
+  document.getElementById('elTplNameWrap').style.display = 'none';
+  document.getElementById('elTplNameInput').value = '';
+}
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+(function init() {
+  // ── v3.0: load theme first so colors apply before render ──
+  _loadTheme();
+  // ── v2.0: render sections from layout config (MUST be first) ──
+  _loadLayout();
+  renderSections();
+
+  // Add first activity
+  addActivity();
+
+  // Patch collect/apply draft to carry layout + theme
+  _patchCollectDraft();
+  _patchApplyDraft();
+  _patchThemeIntoDraft();
+
+  // Restore dark mode
+  try {
+    if (localStorage.getItem('lpDark') === '1') {
+      document.body.classList.add('dark');
+      document.getElementById('darkItem').textContent = '☀️ Light Mode';
+      document.getElementById('darkItemMob').textContent = '☀️ Light Mode';
+    }
+  } catch(e) {}
+
+  // Restore draft
+  try {
+    var raw = localStorage.getItem('lpDraft');
+    if (raw) { _draft = JSON.parse(raw); applyDraft(_draft); }
+  } catch(e) {}
+
+  // Save dialog — close on Enter/Escape
+  document.getElementById('saveFilename').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') confirmSave();
+    if (e.key === 'Escape') closeSaveDialog();
+  });
+  document.getElementById('exportFilename').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') confirmExport();
+    if (e.key === 'Escape') closeExportDialog();
+  });
+
+  // Scroll spy now attached via renderSections() → _attachScrollSpy()
+
+  tick();
+})();
+
+
+// ═══════════════════════════════════════════════════════════════
+// LESSONCRAFT BUILT-IN TEMPLATES
+// ═══════════════════════════════════════════════════════════════
+
+var LC_TEMPLATES = [
+  {
+    id: 'blank-plain',
+    name: 'Blank Lesson Plan',
+    emoji: '⬜',
+    subject: 'Any Subject',
+    grade: 'Any Grade',
+    desc: 'A completely empty form. Start from scratch with no pre-filled content.',
+    data: {}
+  },
+  {
+    id: 'blank-rich',
+    name: 'Blank with Scaffolding',
+    emoji: '🎨',
+    subject: 'Any Subject',
+    grade: 'Any Grade',
+    desc: 'Empty form with assessment scaffolding, differentiation prompts, and three-part lesson hints pre-loaded.',
+    data: {
+      duration: '75 minutes',
+      achKnowledge: 'Knowledge: Students demonstrate understanding of core concepts through...',
+      achThinking: 'Thinking: Students apply reasoning and problem-solving to...',
+      achCommunication: 'Communication: Students express their understanding through...',
+      achApplication: 'Application: Students connect learning to real-world contexts by...',
+      assessDiagnostic: 'Activate prior knowledge: [e.g. exit ticket, KWL chart, think-pair-share]',
+      assessFormative: 'Observation and questioning while students work. Look for: [specific indicators]',
+      assessAs: 'Self-assessment checklist or peer feedback against success criteria.',
+      assessOf: '[Describe summative task, or note: No summative assessment this lesson]',
+      priorLearning: 'Students should already know: [prior concepts]. This lesson builds toward: [next concept].',
+      differentiation: 'IEP/ELL: [simplified version or sentence frames]\nExtend: [enrichment task]\nGrouping: [strategic pairing, small group]',
+      technology: 'Tools this lesson:\n[e.g. Smartboard, Chromebooks, Google Forms exit ticket]',
+      mindsOnTitle: 'Minds On — Hook / Activation',
+      mindsOnDesc: 'Describe your opening activity (5–10 min). Consider: provocative question, image, short video, or quick poll.',
+      consolidationTitle: 'Consolidation — Reflect and Connect',
+      consolidationDesc: 'Describe consolidation activity. Consider: exit ticket, 3-2-1, gallery walk, or whole-class discussion.',
+      extension: 'Early finishers: [enrichment task that deepens understanding]'
+    }
+  }
+];
+
+var _selectedTemplate = null;
+var _templateLibUrl = 'https://kamaflage.github.io/lessoncraft/templates/index.json';
+var _templateLibIndex = null;
+var _onlineTemplates = [];
+
+function renderTemplateList() {
+  var list = document.getElementById('templateList');
+  if (!list) return;
+  var all = LC_TEMPLATES.concat(_onlineTemplates);
+  list.innerHTML = all.map(function(t, i) {
+    var isOnline = i >= LC_TEMPLATES.length;
+    return '<div onclick="selectTemplate(' + i + ')" id="tplCard' + i + '" style="' +
+      'padding:10px 14px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;margin-bottom:6px;' +
+      'transition:border-color 0.15s,background 0.15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation">' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+      '<span style="font-weight:600;font-size:13px;color:var(--navy)">' + (t.emoji || '') + ' ' + t.name + '</span>' +
+      (isOnline ? '<span style="font-size:9px;background:var(--light);color:var(--steel);border-radius:4px;padding:1px 5px;font-family:monospace">online</span>' : '') +
+      '</div>' +
+      '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + t.subject + ' · ' + t.grade + '</div>' +
+      '</div>';
+  }).join('');
+  if (!_templateLibIndex) {
+    var div = document.createElement('div');
+    div.style.cssText = 'margin-top:10px;text-align:center';
+    div.innerHTML = '<button class="btn btn-secondary" style="width:100%;justify-content:center;font-size:12px" onclick="loadOnlineTemplates()">☁ Load Online Templates</button>';
+    list.appendChild(div);
+  }
+}
+
+function selectTemplate(idx) {
+  _selectedTemplate = idx;
+  var all = LC_TEMPLATES.concat(_onlineTemplates);
+  all.forEach(function(t, i) {
+    var card = document.getElementById('tplCard' + i);
+    if (!card) return;
+    card.style.borderColor = i === idx ? 'var(--gold)' : 'var(--border)';
+    card.style.background  = i === idx ? 'var(--gold-l, #FEF9EC)' : '';
+  });
+  var tpl = all[idx];
+  var preview = document.getElementById('templatePreview');
+  if (preview) {
+    document.getElementById('tplPreviewTitle').textContent = (tpl.emoji || '') + ' ' + tpl.name;
+    document.getElementById('tplPreviewDesc').textContent  = tpl.desc;
+    preview.style.display = 'block';
+  }
+}
+
+function loadOnlineTemplates() {
+  if (_templateLibIndex) { renderTemplateList(); return; }
+  var btn = document.querySelector('#templateList button');
+  if (btn) btn.textContent = 'Loading…';
+  fetch(_templateLibUrl)
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(data) {
+      _templateLibIndex = data;
+      _onlineTemplates = data.map(function(t) {
+        return { id: t.id, name: t.name, emoji: t.emoji || '', subject: t.subject, grade: t.grade, desc: t.desc, url: t.url, data: null };
+      });
+      renderTemplateList();
+    })
+    .catch(function(e) { toast('Could not load online templates: ' + e.message); });
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// LESSONCRAFT v3.0 — THEME ENGINE
+// ══════════════════════════════════════════════════════════════════════════════
+
+var LC_DEFAULT_THEME = {
+  navy:    '#1F3864',
+  steel:   '#2E5F8A',
+  gold:    '#C49A28',
+  bg:      '#F5F7FB',
+  ink:     '#1A2233',
+  heading: 'Playfair Display',
+  body:    'Source Sans 3'
+};
+
+var LC_PRESETS = [
+  {
+    id: 'classic',
+    name: 'Classic Blue',
+    navy: '#1F3864', steel: '#2E5F8A', gold: '#C49A28',
+    bg: '#F5F7FB', ink: '#1A2233',
+    heading: 'Playfair Display', body: 'Source Sans 3'
+  },
+  {
+    id: 'forest',
+    name: 'Forest Green',
+    navy: '#1B4332', steel: '#2D6A4F', gold: '#D4A017',
+    bg: '#F4F8F5', ink: '#1A2A1A',
+    heading: 'Merriweather', body: 'Lato'
+  },
+  {
+    id: 'slate',
+    name: 'Slate Modern',
+    navy: '#2D3748', steel: '#4A5568', gold: '#E6B012',
+    bg: '#F7F8FA', ink: '#1A202C',
+    heading: 'Georgia', body: 'Inter'
+  },
+  {
+    id: 'burgundy',
+    name: 'Burgundy',
+    navy: '#6B1A2A', steel: '#8B2A3A', gold: '#D4A017',
+    bg: '#FBF5F6', ink: '#1A0A0C',
+    heading: 'Lora', body: 'Open Sans'
+  },
+  {
+    id: 'midnight',
+    name: 'Midnight',
+    navy: '#0F172A', steel: '#1E293B', gold: '#F59E0B',
+    bg: '#F8FAFC', ink: '#0F172A',
+    heading: 'Playfair Display', body: 'Roboto'
+  },
+  {
+    id: 'minimal',
+    name: 'Minimal',
+    navy: '#111827', steel: '#374151', gold: '#6366F1',
+    bg: '#FFFFFF', ink: '#111827',
+    heading: 'Arial', body: 'Open Sans'
+  }
+];
+
+var _currentTheme = null;
+var _workingTheme = null; // theme being edited (not yet applied)
+
+// ── Load / Save ─────────────────────────────────────────────────────────────
+function _loadTheme() {
+  try {
+    var raw = localStorage.getItem('lc_theme');
+    if (raw) {
+      _currentTheme = JSON.parse(raw);
+      _applyThemeToDOM(_currentTheme);
+    } else {
+      _currentTheme = Object.assign({}, LC_DEFAULT_THEME);
+    }
+  } catch(e) {
+    _currentTheme = Object.assign({}, LC_DEFAULT_THEME);
+  }
+}
+
+function _saveThemeToStorage(theme) {
+  try { localStorage.setItem('lc_theme', JSON.stringify(theme)); } catch(e) {}
+}
+
+// ── Apply theme to DOM (live preview via CSS vars) ───────────────────────────
+function _applyThemeToDOM(theme) {
+  var root = document.documentElement;
+  if (theme.navy)  root.style.setProperty('--navy',  theme.navy);
+  if (theme.steel) root.style.setProperty('--steel', theme.steel);
+  if (theme.gold)  root.style.setProperty('--gold',  theme.gold);
+  if (theme.bg)    root.style.setProperty('--bg',    theme.bg);
+  if (theme.ink)   root.style.setProperty('--ink',   theme.ink);
+  // Derive related colors from primary
+  if (theme.navy) {
+    root.style.setProperty('--light', _lighten(theme.navy, 0.75));
+    root.style.setProperty('--pale',  _lighten(theme.navy, 0.92));
+  }
+  // Font
+  if (theme.heading) {
+    document.querySelectorAll('h1,h2,h3,.section-head h2,.header-title,.te-header-title')
+      .forEach(function(el) { el.style.fontFamily = "'" + theme.heading + "',serif"; });
+  }
+  if (theme.body) {
+    document.body.style.fontFamily = "'" + theme.body + "',sans-serif";
+  }
+}
+
+function _lighten(hex, amount) {
+  // Mix hex color with white by `amount` (0=original, 1=white)
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  r = Math.round(r + (255-r)*amount);
+  g = Math.round(g + (255-g)*amount);
+  b = Math.round(b + (255-b)*amount);
+  return '#' + [r,g,b].map(function(x){ return x.toString(16).padStart(2,'0'); }).join('');
+}
+
+function _hexFromVar(varName) {
+  return getComputedStyle(document.documentElement).getPropertyValue('--'+varName).trim();
+}
+
+// ── Open / Close ─────────────────────────────────────────────────────────────
+function openThemeEditor() {
+  closeOverflow();
+  _workingTheme = Object.assign({}, _currentTheme);
+  _renderPresets();
+  _syncEditorControls(_workingTheme);
+  _renderLivePreview(_workingTheme);
+  document.getElementById('themeOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeThemeEditor() {
+  document.getElementById('themeOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  // Revert DOM to current (saved) theme if user closes without applying
+  _applyThemeToDOM(_currentTheme);
+}
+
+function applyTheme() {
+  _currentTheme = Object.assign({}, _workingTheme);
+  _applyThemeToDOM(_currentTheme);
+  _saveThemeToStorage(_currentTheme);
+  document.getElementById('themeOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  toast('✓ Theme applied');
+}
+
+function resetTheme() {
+  _workingTheme = Object.assign({}, LC_DEFAULT_THEME);
+  _syncEditorControls(_workingTheme);
+  _applyThemeToDOM(_workingTheme);
+  _renderLivePreview(_workingTheme);
+  _renderPresets();
+}
+
+// ── Preset rendering ─────────────────────────────────────────────────────────
+function _renderPresets() {
+  var grid = document.getElementById('tePresetGrid');
+  if (!grid) return;
+  grid.innerHTML = LC_PRESETS.map(function(p) {
+    var isActive = _workingTheme && _workingTheme._preset === p.id;
+    return '<div class="te-preset-card' + (isActive ? ' active' : '') + '" onclick="applyPreset(\'' + p.id + '\')">' +
+      '<div class="te-preset-name">' + p.name + '</div>' +
+      '<div class="te-preset-swatches">' +
+        '<div class="te-preset-dot" style="background:' + p.navy + '"></div>' +
+        '<div class="te-preset-dot" style="background:' + p.steel + '"></div>' +
+        '<div class="te-preset-dot" style="background:' + p.gold + '"></div>' +
+        '<div class="te-preset-dot" style="background:' + p.bg + ';border:1px solid #ccc"></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function applyPreset(id) {
+  var preset = LC_PRESETS.find(function(p) { return p.id === id; });
+  if (!preset) return;
+  _workingTheme = Object.assign({}, preset, { _preset: id });
+  _syncEditorControls(_workingTheme);
+  _applyThemeToDOM(_workingTheme);
+  _renderLivePreview(_workingTheme);
+  _renderPresets();
+}
+
+// ── Sync controls ─────────────────────────────────────────────────────────────
+function _syncEditorControls(theme) {
+  var colorMap = { navy: 'navy', steel: 'steel', gold: 'gold', bg: 'bg', ink: 'ink' };
+  Object.keys(colorMap).forEach(function(key) {
+    var val = theme[key] || LC_DEFAULT_THEME[key];
+    var picker = document.getElementById('tc-' + key);
+    var hex = document.getElementById('th-' + key);
+    if (picker) picker.value = val;
+    if (hex) hex.value = val;
+  });
+  var hSel = document.getElementById('tf-heading');
+  var bSel = document.getElementById('tf-body');
+  if (hSel) hSel.value = theme.heading || LC_DEFAULT_THEME.heading;
+  if (bSel) bSel.value = theme.body || LC_DEFAULT_THEME.body;
+}
+
+// ── Color change handlers ─────────────────────────────────────────────────────
+function teColorChanged(key, value) {
+  _workingTheme[key] = value;
+  _workingTheme._preset = null;
+  var hexInput = document.getElementById('th-' + key);
+  if (hexInput) hexInput.value = value;
+  _applyThemeToDOM(_workingTheme);
+  _renderLivePreview(_workingTheme);
+  _renderPresets();
+}
+
+function teHexChanged(key, value) {
+  if (!/^#[0-9A-Fa-f]{6}$/.test(value)) return;
+  _workingTheme[key] = value;
+  _workingTheme._preset = null;
+  var picker = document.getElementById('tc-' + key);
+  if (picker) picker.value = value;
+  _applyThemeToDOM(_workingTheme);
+  _renderLivePreview(_workingTheme);
+  _renderPresets();
+}
+
+function teFontChanged() {
+  _workingTheme.heading = document.getElementById('tf-heading').value;
+  _workingTheme.body    = document.getElementById('tf-body').value;
+  _workingTheme._preset = null;
+  _applyThemeToDOM(_workingTheme);
+  _renderLivePreview(_workingTheme);
+}
+
+// ── Live preview ─────────────────────────────────────────────────────────────
+function _renderLivePreview(theme) {
+  var head = document.getElementById('tePreviewHead');
+  var num  = document.getElementById('tePreviewNum');
+  var title = document.getElementById('tePreviewTitle');
+  var sub  = document.getElementById('tePreviewSub');
+  var label = document.getElementById('tePreviewLabel');
+  var field = document.getElementById('tePreviewField');
+  if (!head) return;
+
+  head.style.background = theme.navy || LC_DEFAULT_THEME.navy;
+  num.style.background  = 'rgba(255,255,255,0.2)';
+  title.style.color     = '#ffffff';
+  title.style.fontFamily = "'" + (theme.heading || 'Playfair Display') + "',serif";
+  sub.style.color       = 'rgba(255,255,255,0.7)';
+  if (label) label.style.color = theme.steel || LC_DEFAULT_THEME.steel;
+  if (field) field.style.borderColor = theme.steel || LC_DEFAULT_THEME.steel;
+}
+
+// ── Theme travels with draft ──────────────────────────────────────────────────
+function _patchThemeIntoDraft() {
+  // Patch collectDraft to include theme
+  var origCollect = window.collectDraft;
+  if (origCollect && !origCollect._themPatched) {
+    window.collectDraft = function() {
+      var d = origCollect();
+      if (_currentTheme) d._theme = Object.assign({}, _currentTheme);
+      return d;
+    };
+    window.collectDraft._themPatched = true;
+  }
+  // Patch applyDraft to restore theme
+  var origApply = window.applyDraft;
+  if (origApply && !origApply._themePatched) {
+    window.applyDraft = function(data) {
+      if (data && data._theme) {
+        _currentTheme = data._theme;
+        _applyThemeToDOM(_currentTheme);
+        _saveThemeToStorage(_currentTheme);
+      }
+      origApply(data);
+    };
+    window.applyDraft._themePatched = true;
+  }
+}
+
+// ── Theme into DOCX ──────────────────────────────────────────────────────────
+function _themeDocxColors() {
+  // Returns hex strings (no #) for use in docx
+  var t = _currentTheme || LC_DEFAULT_THEME;
+  return {
+    NAVY:  (t.navy  || LC_DEFAULT_THEME.navy).replace('#',''),
+    STEEL: (t.steel || LC_DEFAULT_THEME.steel).replace('#',''),
+    GOLD:  (t.gold  || LC_DEFAULT_THEME.gold).replace('#',''),
+    LIGHT: _lighten(t.navy  || LC_DEFAULT_THEME.navy, 0.75).replace('#',''),
+    WHITE: 'FFFFFF'
+  };
+}
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+</script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     THEME EDITOR OVERLAY  v3.0
+══════════════════════════════════════════════════════════════ -->
+<div id="themeOverlay">
+
+  <div class="te-header">
+    <div style="flex:1">
+      <div class="te-header-title">🎨 Theme Editor</div>
+      <div class="te-header-sub">Colors · Fonts · Preview</div>
+    </div>
+    <button onclick="closeThemeEditor()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:7px 14px;cursor:pointer;font-size:13px;-webkit-tap-highlight-color:transparent">✕ Close</button>
+    <button onclick="applyTheme()" style="background:var(--gold);border:none;color:#fff;border-radius:6px;padding:7px 16px;cursor:pointer;font-size:13px;font-weight:600;-webkit-tap-highlight-color:transparent">✓ Apply</button>
+  </div>
+
+  <div class="te-body">
+
+    <!-- Live preview -->
+    <div class="te-preview">
+      <div class="te-preview-title">Live Preview</div>
+      <div class="te-preview-card" id="tePreviewCard">
+        <div class="te-preview-head" id="tePreviewHead">
+          <div id="tePreviewNum" style="width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;margin-right:8px">1</div>
+          <span id="tePreviewTitle" style="font-weight:700;font-size:15px">Section Title</span>
+          <div id="tePreviewSub" style="font-size:11px;margin-top:2px;opacity:0.8">Section subtitle description</div>
+        </div>
+        <div class="te-preview-body">
+          <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;margin-bottom:6px" id="tePreviewLabel">FIELD LABEL</div>
+          <div class="te-preview-field" id="tePreviewField"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preset themes -->
+    <div class="te-section">
+      <div class="te-section-title">⚡ Presets</div>
+      <div class="te-preset-grid" id="tePresetGrid"></div>
+    </div>
+
+    <!-- Colors -->
+    <div class="te-section">
+      <div class="te-section-title">🎨 Colors</div>
+      <div class="te-row">
+        <span class="te-label">Primary (headers)</span>
+        <div class="te-color-wrap">
+          <div class="te-color-swatch"><input type="color" id="tc-navy" oninput="teColorChanged('navy',this.value)"></div>
+          <input type="text" class="te-color-hex" id="th-navy" maxlength="7" oninput="teHexChanged('navy',this.value)" placeholder="#1F3864">
+        </div>
+      </div>
+      <div class="te-row">
+        <span class="te-label">Secondary (accents)</span>
+        <div class="te-color-wrap">
+          <div class="te-color-swatch"><input type="color" id="tc-steel" oninput="teColorChanged('steel',this.value)"></div>
+          <input type="text" class="te-color-hex" id="th-steel" maxlength="7" oninput="teHexChanged('steel',this.value)" placeholder="#2E5F8A">
+        </div>
+      </div>
+      <div class="te-row">
+        <span class="te-label">Highlight / Gold</span>
+        <div class="te-color-wrap">
+          <div class="te-color-swatch"><input type="color" id="tc-gold" oninput="teColorChanged('gold',this.value)"></div>
+          <input type="text" class="te-color-hex" id="th-gold" maxlength="7" oninput="teHexChanged('gold',this.value)" placeholder="#C49A28">
+        </div>
+      </div>
+      <div class="te-row">
+        <span class="te-label">Page background</span>
+        <div class="te-color-wrap">
+          <div class="te-color-swatch"><input type="color" id="tc-bg" oninput="teColorChanged('bg',this.value)"></div>
+          <input type="text" class="te-color-hex" id="th-bg" maxlength="7" oninput="teHexChanged('bg',this.value)" placeholder="#F5F7FB">
+        </div>
+      </div>
+      <div class="te-row">
+        <span class="te-label">Body text</span>
+        <div class="te-color-wrap">
+          <div class="te-color-swatch"><input type="color" id="tc-ink" oninput="teColorChanged('ink',this.value)"></div>
+          <input type="text" class="te-color-hex" id="th-ink" maxlength="7" oninput="teHexChanged('ink',this.value)" placeholder="#1A2233">
+        </div>
+      </div>
+    </div>
+
+    <!-- Fonts -->
+    <div class="te-section">
+      <div class="te-section-title">✍ Fonts</div>
+      <div class="te-row">
+        <span class="te-label">Heading font</span>
+        <select class="te-font-select" id="tf-heading" onchange="teFontChanged()">
+          <option value="Playfair Display">Playfair Display</option>
+          <option value="Georgia">Georgia</option>
+          <option value="Merriweather">Merriweather</option>
+          <option value="Lora">Lora</option>
+          <option value="Source Serif 4">Source Serif 4</option>
+          <option value="Arial">Arial (Sans)</option>
+          <option value="Helvetica">Helvetica</option>
+        </select>
+      </div>
+      <div class="te-row">
+        <span class="te-label">Body font</span>
+        <select class="te-font-select" id="tf-body" onchange="teFontChanged()">
+          <option value="Source Sans 3">Source Sans 3</option>
+          <option value="Open Sans">Open Sans</option>
+          <option value="Lato">Lato</option>
+          <option value="Roboto">Roboto</option>
+          <option value="Inter">Inter</option>
+          <option value="Georgia">Georgia (Serif)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <button onclick="resetTheme()" class="btn btn-secondary" style="width:100%;justify-content:center;margin-bottom:8px">↺ Reset to Default</button>
+
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     INTERACTIVE WALKTHROUGH OVERLAY
+══════════════════════════════════════════════════════════════ -->
+<div id="wtOverlay">
+  <div id="wtBackdrop" onclick="wtSkip()"></div>
+  <div id="wtHighlight"></div>
+  <div id="wtTooltip">
+    <div class="wt-step-label" id="wtStepLabel">Step 1 of 9</div>
+    <div class="wt-title"   id="wtTitle">Welcome</div>
+    <div class="wt-body"    id="wtBody">Let's go.</div>
+    <div class="wt-actions">
+      <div class="wt-progress" id="wtProgress"></div>
+      <button class="wt-btn-skip" onclick="wtSkip()">Skip</button>
+      <button class="wt-btn-next" id="wtNextBtn" onclick="wtNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
