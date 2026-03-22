@@ -1,0 +1,30 @@
+{
+  "id": "ss-community",
+  "name": "Social Studies — Community Roles",
+  "emoji": "🏘",
+  "subject": "Social Studies",
+  "grade": "Grade 1–3",
+  "desc": "Community helpers and civic responsibility lesson. Students explore roles in their community, why communities need different helpers, and what it means to belong.",
+  "data": {
+    "lessonTitle": "Our Community — Roles, Responsibilities, and Belonging",
+    "gradeSubject": "Grade 2 Social Studies",
+    "strand": "People and Environments — Our Changing Community",
+    "duration": "60 minutes",
+    "achKnowledge": "Identify at least 4 community helpers and describe their role.",
+    "achThinking": "Explain why communities need people to take on different roles.",
+    "achCommunication": "Describe a community helper's role using complete sentences and key vocabulary.",
+    "achApplication": "Reflect on what role they play or could play in their school community.",
+    "assessDiagnostic": "\"Who helps us in our community?\" Brainstorm on sticky notes, sort by category on anchor chart.",
+    "assessFormative": "Circulate during activity. Prompts: \"What does this person do? Why is their job important?\"",
+    "assessAs": "Students share their community helper drawing with a partner using sentence frames.",
+    "assessOf": "Community Helper Portrait: drawing + 2–3 sentence description of role and why it matters.",
+    "priorLearning": "Students have discussed family roles at home. Familiar with concept of a helper from Kindergarten/Grade 1.",
+    "differentiation": "IEP/ELL: Provide picture cards of community helpers. Sentence frame: \"___ helps our community by ___\"\nExtension: research a community helper not discussed and present to the group.",
+    "technology": "Short video clip of a community helper at work. Smartboard for sorting community roles.",
+    "mindsOnTitle": "Mystery Helper Bags",
+    "mindsOnDesc": "Prepare bags with objects from different community helpers (stethoscope, fire hat, library card, ruler). Students guess the helper from the objects. Connect: communities need many different helpers.",
+    "consolidationTitle": "Community Portrait Share",
+    "consolidationDesc": "Students share their community helper drawing and read their sentence aloud. Closing: \"What role do YOU play in our school community?\" Create a class pledge.",
+    "extension": "Interview a family member about their job. Draw or write: How does their work help the community?"
+  }
+}

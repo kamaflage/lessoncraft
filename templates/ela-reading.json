@@ -1,0 +1,30 @@
+{
+  "id": "ela-reading",
+  "name": "Language Arts — Reading Response",
+  "emoji": "📖",
+  "subject": "Language Arts",
+  "grade": "Grade 3–6",
+  "desc": "Reading comprehension lesson using a mentor text. Students apply inferencing strategies and respond in writing using text evidence.",
+  "data": {
+    "lessonTitle": "Deep Reading — Making Inferences and Using Text Evidence",
+    "gradeSubject": "Grade 4 Language Arts",
+    "strand": "Reading — Comprehension",
+    "duration": "60 minutes",
+    "achKnowledge": "Define inference and identify text evidence that supports a conclusion.",
+    "achThinking": "Apply inferencing strategy to determine unstated meaning in a text.",
+    "achCommunication": "Construct a written response that states a claim and supports it with specific text evidence.",
+    "achApplication": "Connect themes in the text to personal experience or real-world situations.",
+    "assessDiagnostic": "Show an image and ask: \"What can you tell about this scene? How do you know?\" Establish that inferencing means reading clues to reach a conclusion.",
+    "assessFormative": "Circulate during reading and annotating. Prompt: \"What evidence in the text helped you think that?\"",
+    "assessAs": "Students self-check written response: Did I state my inference? Did I include two pieces of text evidence?",
+    "assessOf": "Written reading response: state one inference and support with two pieces of evidence from the text.",
+    "priorLearning": "Students can read and comprehend grade-level texts independently. Familiar with concept of main idea and details.",
+    "differentiation": "IEP/ELL: Pre-highlight key passages. Sentence frame: 'I can infer ___ because the text says ___'\nExtension: compare inference to another text or make a text-to-world connection.",
+    "technology": "Digital text displayed on Smartboard for shared reading and annotation.",
+    "mindsOnTitle": "The Detective Hook",
+    "mindsOnDesc": "Read aloud a short, intriguing passage without revealing the title. \"Without me telling you, what do you think is happening? How do you know?\" Introduce: this is inferencing — reading the clues the author leaves.",
+    "consolidationTitle": "Evidence Gallery",
+    "consolidationDesc": "Students share their written inference with a partner. Whole-class share: 3–4 students read their response. Class votes: strong evidence or needs more support?",
+    "extension": "Find a second inference in the same text. Write a one-paragraph response with three pieces of evidence."
+  }
+}

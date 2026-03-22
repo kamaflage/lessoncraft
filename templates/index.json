@@ -1,1 +1,38 @@
-
+[
+  {
+    "id": "math-financial",
+    "name": "Math — Needs & Wants (Financial Literacy)",
+    "emoji": "🧮",
+    "subject": "Mathematics",
+    "grade": "Grade 4–6",
+    "desc": "Financial literacy lesson exploring needs vs. wants, budgeting decisions, and how personal choices affect spending. Aligned to Ontario Math curriculum.",
+    "url": "https://kamaflage.github.io/lessoncraft/templates/math-financial.json"
+  },
+  {
+    "id": "science-inquiry",
+    "name": "Science — Inquiry Investigation",
+    "emoji": "🔬",
+    "subject": "Science & Technology",
+    "grade": "Grade 4–8",
+    "desc": "Structured inquiry lesson using the scientific method. Students form a hypothesis, design a fair test, collect data, and draw conclusions. Adaptable to any science unit.",
+    "url": "https://kamaflage.github.io/lessoncraft/templates/science-inquiry.json"
+  },
+  {
+    "id": "ela-reading",
+    "name": "Language Arts — Reading Response",
+    "emoji": "📖",
+    "subject": "Language Arts",
+    "grade": "Grade 3–6",
+    "desc": "Reading comprehension lesson using a mentor text. Students apply inferencing strategies and respond in writing using text evidence.",
+    "url": "https://kamaflage.github.io/lessoncraft/templates/ela-reading.json"
+  },
+  {
+    "id": "ss-community",
+    "name": "Social Studies — Community Roles",
+    "emoji": "🏘",
+    "subject": "Social Studies",
+    "grade": "Grade 1–3",
+    "desc": "Community helpers and civic responsibility lesson. Students explore roles in their community, why communities need different helpers, and what it means to belong.",
+    "url": "https://kamaflage.github.io/lessoncraft/templates/ss-community.json"
+  }
+]

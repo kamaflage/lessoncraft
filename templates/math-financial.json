@@ -1,0 +1,30 @@
+{
+  "id": "math-financial",
+  "name": "Math — Needs & Wants (Financial Literacy)",
+  "emoji": "🧮",
+  "subject": "Mathematics",
+  "grade": "Grade 4–6",
+  "desc": "Financial literacy lesson exploring needs vs. wants, budgeting decisions, and how personal choices affect spending. Aligned to Ontario Math curriculum.",
+  "data": {
+    "lessonTitle": "Needs and Wants — Making Smart Financial Decisions",
+    "gradeSubject": "Grade 5 Mathematics",
+    "strand": "Financial Literacy — B. Number",
+    "duration": "75 minutes",
+    "achKnowledge": "Distinguish between needs and wants with examples from daily life.",
+    "achThinking": "Analyze spending scenarios and justify budgeting decisions using mathematical reasoning.",
+    "achCommunication": "Clearly explain financial reasoning using vocabulary: need, want, budget, trade-off, opportunity cost.",
+    "achApplication": "Apply understanding of needs and wants to create a simple personal budget.",
+    "assessDiagnostic": "Think-Pair-Share: \"What did you spend money on last week? Was it a need or a want?\" Record responses on anchor chart.",
+    "assessFormative": "Circulate during activity. Anecdotal notes: Can students justify their categorizations? Are they applying budget constraints?",
+    "assessAs": "Students self-assess against success criteria checklist at end of lesson.",
+    "assessOf": "Budget Planning Exit Ticket: students categorize 5 items and justify one trade-off decision.",
+    "priorLearning": "Students have experience with addition and subtraction of decimals. Familiar with concept of money and making purchases.",
+    "differentiation": "IEP/ELL: Provide visual vocabulary cards (need vs. want with images). Simplify budget amounts to whole numbers.\nExtension: research real prices online and build a monthly budget.",
+    "technology": "Smartboard for anchor chart and scenario display. Optional: calculators for budget activity.",
+    "mindsOnTitle": "The Big Question",
+    "mindsOnDesc": "Display image of a shopping cart full of items. Ask: \"If you had $50, which of these would you buy first?\" Students turn and talk. Introduce vocabulary: need, want, trade-off, budget.",
+    "consolidationTitle": "Budget Reflection",
+    "consolidationDesc": "Students share one budget decision they made and explain their trade-off. Exit ticket: categorize 3 items and explain one trade-off.",
+    "extension": "Research the real price of 5 items from a flyer. Create a one-week budget with $100. Present: what did you choose and why?"
+  }
+}

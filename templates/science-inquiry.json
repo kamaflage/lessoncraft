@@ -1,0 +1,30 @@
+{
+  "id": "science-inquiry",
+  "name": "Science — Inquiry Investigation",
+  "emoji": "🔬",
+  "subject": "Science & Technology",
+  "grade": "Grade 4–8",
+  "desc": "Structured inquiry lesson using the scientific method. Students form a hypothesis, design a fair test, collect data, and draw conclusions. Adaptable to any science unit.",
+  "data": {
+    "lessonTitle": "Scientific Inquiry — Designing a Fair Test",
+    "gradeSubject": "Grade 6 Science & Technology",
+    "strand": "STEM — Scientific Investigation Skills",
+    "duration": "80 minutes",
+    "achKnowledge": "Identify the key components of a fair test: variable, constant, hypothesis, observation.",
+    "achThinking": "Design an investigation that controls variables and collects accurate data.",
+    "achCommunication": "Record observations using scientific vocabulary and communicate findings clearly.",
+    "achApplication": "Connect investigation results to real-world scientific phenomena.",
+    "assessDiagnostic": "Quick-write: \"What do scientists do when they want to answer a question about the world?\" Discuss as class.",
+    "assessFormative": "Monitor lab notebooks during investigation. Questioning: \"What is your variable? How are you keeping things fair?\"",
+    "assessAs": "Students peer-review each other's hypothesis and procedure using a structured checklist.",
+    "assessOf": "Lab report: hypothesis, procedure, data table, conclusion, and connection to real-world application.",
+    "priorLearning": "Students familiar with concept of variables and basic measurement. Previous experience with structured science activities.",
+    "differentiation": "IEP/ELL: Provide sentence frames for hypothesis ('I think ___ because ___'). Graphic organizer for lab notebook.\nExtension: design a follow-up experiment to test a new variable.",
+    "technology": "Smartboard for modeling hypothesis writing. Optional: digital lab notebook or data collection tool.",
+    "mindsOnTitle": "The Mystery Demonstration",
+    "mindsOnDesc": "Teacher demonstrates a surprising phenomenon. Students observe without explanation. \"What do you notice? What do you wonder?\" Introduce: today we design our own test to answer a question just like this.",
+    "consolidationTitle": "Science Share-Out",
+    "consolidationDesc": "Groups share: hypothesis, what they changed, what they kept the same, and what they found. Students write one sentence connecting their finding to a real-world example.",
+    "extension": "Design a second investigation that changes a different variable. Predict: will the results be the same or different? Explain."
+  }
+}
