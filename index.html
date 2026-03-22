@@ -22,706 +22,6 @@
   };
   document.head.appendChild(s);
 })();
-</script>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-:root {
-  --navy:   #1F3864;
-  --steel:  #2E5F8A;
-  --sky:    #4A90C4;
-  --light:  #D9E2F3;
-  --pale:   #F0F4FB;
-  --gold:   #C49A28;
-  --white:  #FFFFFF;
-  --ink:    #1A2233;
-  --muted:  #6B7A96;
-  --border: #C8D4E8;
-  --green:  #2D7D52;
-  --red:    #C0392B;
-  --bg:     #F5F7FB;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
-
-/* HEADER */
-.app-header { background: var(--navy); position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(31,56,100,0.25); }
-.header-inner { max-width: 1100px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: nowrap; }
-.header-brand { display: flex; align-items: center; gap: 10px; min-width: 0; flex-shrink: 1; overflow: hidden; }
-.header-icon { width: 36px; height: 36px; background: var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-.header-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.header-sub { font-size: 11px; color: #7A9CC8; margin-top: 1px; white-space: nowrap; }
-.header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-/* Mobile panel — full-width strip below header */
-.mob-panel { display: none; background: #162d52; border-bottom: 1px solid rgba(255,255,255,0.1); padding: 10px 16px; flex-wrap: wrap; gap: 8px; }
-.mob-panel.open { display: flex; }
-.mob-panel-btn { display: flex; align-items: center; gap: 7px; padding: 9px 14px; background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
-.mob-panel-btn:hover { background: rgba(255,255,255,0.18); }
-.mob-panel-btn.danger { color: #f8a4a4; border-color: rgba(248,164,164,0.3); }
-body.dark .mob-panel { background: #070f1a; }
-.version-badge { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.09); border: 1px solid rgba(255,255,255,0.14); padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
-.progress-bar-wrap { background: rgba(0,0,0,0.2); height: 3px; }
-.progress-bar-fill { height: 100%; background: var(--gold); transition: width 0.4s ease; width: 0%; }
-
-/* LAYOUT */
-.app-body { max-width: 1100px; margin: 0 auto; padding: 28px 28px 80px; display: grid; grid-template-columns: 210px 1fr; gap: 24px; align-items: start; }
-
-/* SIDEBAR */
-.sidebar { position: sticky; top: 72px; background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 12px rgba(31,56,100,0.07); }
-.sidebar-label { padding: 12px 14px 8px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; }
-.nav-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; border-left: 3px solid transparent; font-size: 13px; color: var(--muted); text-decoration: none; border-bottom: 1px solid #F0F2F7; transition: background 0.15s, color 0.15s; }
-.nav-item:last-child { border-bottom: none; }
-.nav-item:hover { background: var(--pale); color: var(--steel); }
-.nav-item.active { background: var(--pale); color: var(--navy); border-left-color: var(--gold); font-weight: 600; }
-.nav-item.done { color: var(--green); }
-.nav-num { width: 18px; height: 18px; background: var(--light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--steel); flex-shrink: 0; }
-.nav-item.active .nav-num { background: var(--navy); color: var(--white); }
-.nav-check { font-size: 10px; margin-left: auto; opacity: 0; }
-.nav-item.done .nav-check { opacity: 1; }
-
-/* MAIN */
-.main-content { display: flex; flex-direction: column; gap: 20px; }
-
-/* COMPLETION STRIP */
-.completion-strip { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 6px rgba(31,56,100,0.06); }
-.completion-label { font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap; }
-.completion-track { flex: 1; height: 8px; background: var(--light); border-radius: 4px; overflow: hidden; }
-.completion-fill { height: 100%; background: linear-gradient(90deg, var(--steel), var(--gold)); border-radius: 4px; transition: width 0.5s ease; }
-.completion-pct { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--steel); white-space: nowrap; min-width: 36px; text-align: right; }
-
-/* SECTION CARD */
-.section-card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 2px 12px rgba(31,56,100,0.06); scroll-margin-top: 80px; }
-.section-head { background: var(--navy); padding: 14px 22px; display: flex; align-items: center; gap: 12px; }
-.section-head-num { width: 26px; height: 26px; background: rgba(255,255,255,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--white); flex-shrink: 0; }
-.section-head h2 { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--white); }
-.section-head p { font-size: 11px; color: #7A9CC8; margin-top: 2px; }
-.section-body { padding: 22px; display: flex; flex-direction: column; gap: 18px; }
-
-/* FIELDS */
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field-row { display: grid; gap: 14px; }
-.field-row.cols-2 { grid-template-columns: 1fr 1fr; }
-.field-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-.field-label { font-size: 11px; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: 0.07em; }
-.required { color: var(--gold); }
-.field-hint { font-size: 12px; color: var(--muted); font-style: italic; background: var(--pale); border-left: 3px solid var(--sky); padding: 7px 11px; border-radius: 0 6px 6px 0; line-height: 1.5; }
-input[type="text"], input[type="date"], select, textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: var(--ink); background: var(--white); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-input:focus, select:focus, textarea:focus { border-color: var(--steel); box-shadow: 0 0 0 3px rgba(46,95,138,0.12); }
-textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
-textarea.tall { min-height: 130px; }
-textarea.short { min-height: 60px; }
-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7A96' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; }
-hr.divider { border: none; border-top: 1.5px solid var(--border); }
-
-/* REPEATER */
-.repeater { display: flex; flex-direction: column; gap: 6px; }
-.repeater-item { display: flex; gap: 6px; align-items: flex-start; }
-.repeater-item input, .repeater-item textarea { flex: 1; }
-.repeater-bullet { width: 26px; height: 36px; display: flex; align-items: center; justify-content: center; color: var(--steel); font-size: 16px; flex-shrink: 0; }
-.btn-remove { width: 30px; height: 30px; border: 1.5px solid #E0C8C8; background: #FDF5F5; color: var(--red); border-radius: 6px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 3px; transition: background 0.15s; }
-.btn-remove:hover { background: #FAE8E8; }
-.btn-add { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 1.5px dashed var(--sky); background: transparent; color: var(--steel); border-radius: 7px; cursor: pointer; font-size: 13px; font-family: 'Source Sans 3', sans-serif; transition: background 0.15s; margin-top: 4px; }
-.btn-add:hover { background: var(--pale); border-color: var(--steel); }
-
-/* PHASE */
-.phase-header { background: var(--steel); color: var(--white); padding: 10px 18px; border-radius: 8px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-.phase-badge { background: rgba(255,255,255,0.18); padding: 2px 9px; border-radius: 10px; font-size: 11px; font-family: 'DM Mono', monospace; }
-
-/* ACTIVITY BLOCK */
-.activity-block { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
-.activity-block-head { background: var(--pale); padding: 10px 16px; border-bottom: 1.5px solid var(--border); display: flex; align-items: center; gap: 8px; }
-.activity-tag { background: var(--steel); color: var(--white); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 8px; border-radius: 4px; font-family: 'DM Mono', monospace; }
-.activity-block-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
-
-/* BUTTONS */
-.btn { padding: 9px 20px; border-radius: 8px; font-family: 'Source Sans 3', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 7px; transition: all 0.18s; }
-.btn-primary { background: var(--navy); color: var(--white); box-shadow: 0 2px 8px rgba(31,56,100,0.2); }
-.btn-primary:hover { background: var(--steel); }
-.btn-secondary { background: var(--white); color: var(--navy); border: 1.5px solid var(--border); }
-.btn-secondary:hover { background: var(--pale); border-color: var(--steel); }
-.btn-gold { background: var(--gold); color: var(--white); box-shadow: 0 2px 8px rgba(196,154,40,0.3); }
-.btn-gold:hover { background: #B08820; }
-.btn-header { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 7px 13px; border-radius: 6px; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; transition: background 0.15s; }
-.btn-header:hover { background: rgba(255,255,255,0.22); }
-
-/* GENERATE CARD */
-.generate-card { background: linear-gradient(135deg, var(--navy) 0%, #2A4A80 100%); border-radius: 12px; padding: 26px; display: flex; align-items: center; justify-content: space-between; gap: 20px; box-shadow: 0 4px 20px rgba(31,56,100,0.2); }
-.generate-card h3 { font-family: 'Playfair Display', serif; font-size: 19px; color: var(--white); margin-bottom: 5px; }
-.generate-card p { font-size: 13px; color: #7A9CC8; max-width: 400px; line-height: 1.5; }
-
-/* TOAST */
-.toast { position: fixed; bottom: 24px; right: 24px; background: var(--navy); color: var(--white); padding: 11px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; box-shadow: 0 8px 24px rgba(31,56,100,0.3); transform: translateY(70px); opacity: 0; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); z-index: 200; }
-.toast.show { transform: translateY(0); opacity: 1; }
-
-/* SAVE DIALOG */
-.dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; align-items: center; justify-content: center; }
-.dialog-overlay.open { display: flex; }
-.dialog-box { background: var(--white); border-radius: 12px; padding: 24px; width: 320px; max-width: 90vw; box-shadow: 0 8px 32px rgba(31,56,100,0.25); }
-.dialog-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 12px; }
-.dialog-box input { width: 100%; margin-bottom: 14px; }
-.dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
-
-/* LEARNING SKILLS CHECKBOXES */
-.skill-col label.field-label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
-.skill-col input[type="checkbox"] { width: auto; cursor: pointer; }
-
-/* DARK MODE */
-body.dark { --navy:#0d1f3c; --steel:#1e3f5a; --light:#1a2a3a; --pale:#1e2d3d; --gold:#C49A28; --white:#e8edf5; --ink:#d4dbe8; --muted:#8a9bb8; --border:#2a3a4a; --bg:#0f1923; }
-body.dark .app-header { background: #070f1a; }
-body.dark .section-card, body.dark .sidebar, body.dark .completion-strip { background: #131e2b; border-color: #1e2d3d; }
-body.dark input, body.dark textarea, body.dark select { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
-body.dark .activity-block { border-color: #1e2d3d; }
-body.dark .activity-block-head { background: #1a2a3a; border-color: #1e2d3d; }
-body.dark .btn-secondary { background: #1a2a3a; color: #d4dbe8; border-color: #2a3a4a; }
-body.dark .dialog-box { background: #131e2b; }
-body.dark .field-hint { background: #1a2a3a; }
-
-/* MOBILE DRAWER */
-.hamburger { display: none; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 36px; height: 36px; border-radius: 6px; font-size: 18px; cursor: pointer; align-items: center; justify-content: center; flex-shrink: 0; }
-.mob-only { display: none; }
-.drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 400; }
-.drawer-overlay.open { display: block; }
-.drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: var(--white); z-index: 410; transform: translateX(-100%); transition: transform 0.26s cubic-bezier(0.4,0,0.2,1); box-shadow: 4px 0 24px rgba(31,56,100,0.18); overflow-y: auto; }
-.drawer.open { transform: translateX(0); }
-.drawer-header { background: var(--navy); padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
-.drawer-title { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--white); font-weight: 600; }
-.drawer-close { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 30px; height: 30px; border-radius: 6px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-body.dark .drawer { background: #131e2b; }
-
-/* OVERFLOW MENU */
-.overflow-menu-wrap { position: relative; }
-.overflow-menu { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: var(--white); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(31,56,100,0.18); min-width: 200px; z-index: 200; overflow: hidden; }
-.overflow-menu.open { display: block; }
-.overflow-item { display: block; width: 100%; padding: 11px 16px; text-align: left; background: none; border: none; font-family: 'Source Sans 3', sans-serif; font-size: 14px; color: var(--ink); cursor: pointer; transition: background 0.12s; }
-.overflow-item:hover { background: var(--pale); }
-.overflow-danger { color: var(--red); }
-.overflow-divider { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
-body.dark .overflow-menu { background: #1a2a3a; border-color: #2a3a4a; }
-body.dark .overflow-item { color: #d4dbe8; }
-body.dark .overflow-item:hover { background: #131e2b; }
-body.dark .overflow-divider { border-color: #2a3a4a; }
-
-/* IMPORT TABS */
-.import-tabs { display: flex; margin-bottom: -1px; }
-.import-tab { flex: 1; padding: 9px; font-size: 13px; font-weight: 600; font-family: 'Source Sans 3', sans-serif; cursor: pointer; background: var(--pale); color: var(--muted); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; transition: all 0.15s; text-align: center; }
-.import-tab:first-child { border-right: none; }
-.import-tab.active { background: var(--white); color: var(--navy); z-index: 1; }
-.import-tab-body { border: 1px solid var(--border); border-radius: 0 0 8px 8px; padding: 16px; margin-bottom: 14px; }
-textarea.paste-area { width: 100%; min-height: 130px; font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.5; resize: vertical; }
-body.dark .import-tab { background: #1a2a3a; color: var(--muted); }
-body.dark .import-tab.active { background: #131e2b; color: var(--gold); }
-body.dark .import-tab-body { background: #131e2b; border-color: #2a3a4a; }
-body.dark textarea.paste-area { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
-
-/* GUIDE PANEL */
-.guide-overlay { display: none; position: fixed; inset: 0; z-index: 500; background: var(--bg); overflow-y: auto; }
-.guide-overlay.open { display: block; }
-.guide-header { background: var(--navy); padding: 16px 28px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1; box-shadow: 0 2px 12px rgba(31,56,100,0.25); }
-.guide-header-title { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--white); font-weight: 700; }
-.guide-close { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 7px 14px; border-radius: 6px; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; }
-.guide-body { max-width: 780px; margin: 0 auto; padding: 36px 28px 60px; }
-.guide-section { margin-bottom: 36px; }
-.guide-section h2 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--navy); margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--light); }
-.guide-section h3 { font-size: 13px; font-weight: 700; color: var(--steel); text-transform: uppercase; letter-spacing: 0.07em; margin: 16px 0 6px; }
-.guide-section p { font-size: 14px; line-height: 1.75; color: var(--ink); margin-bottom: 10px; }
-.guide-section ul { padding-left: 20px; margin-bottom: 10px; }
-.guide-section ul li { font-size: 14px; line-height: 1.75; color: var(--ink); margin-bottom: 4px; }
-.guide-tip { background: var(--pale); border-left: 4px solid var(--gold); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 13px; color: var(--ink); margin: 12px 0; line-height: 1.6; }
-.guide-step { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
-.guide-step-num { width: 28px; height: 28px; background: var(--navy); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
-.guide-step-body { flex: 1; font-size: 14px; line-height: 1.7; color: var(--ink); }
-.guide-step-body strong { color: var(--navy); }
-.guide-kbd { display: inline-block; background: var(--steel); color: var(--white); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-family: 'DM Mono', monospace; vertical-align: middle; }
-body.dark .guide-overlay { background: #0f1923; }
-body.dark .guide-section h2 { color: #d4dbe8; border-color: #1e2d3d; }
-body.dark .guide-section p, body.dark .guide-section ul li, body.dark .guide-step-body { color: #d4dbe8; }
-body.dark .guide-tip { background: #1a2a3a; color: #d4dbe8; }
-body.dark .guide-step-body strong { color: #d4dbe8; }
-
-/* PROMPT DIALOG */
-.prompt-box { background: var(--pale); border: 1.5px solid var(--border); border-radius: 8px; padding: 14px; font-family: 'DM Mono', monospace; font-size: 11.5px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; max-height: 320px; overflow-y: auto; margin-bottom: 14px; }
-body.dark .prompt-box { background: #0f1923; color: #d4dbe8; border-color: #2a3a4a; }
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .app-body { grid-template-columns: 1fr; padding: 12px 12px 80px; }
-  .sidebar { display: none; }
-  .hamburger { display: flex; }
-  .mob-only { display: flex !important; }
-  .field-row.cols-2, .field-row.cols-3 { grid-template-columns: 1fr; }
-  .generate-card { flex-direction: column; }
-  .generate-card .btn { width: 100%; justify-content: center; }
-  .version-badge { display: none; }
-  .header-inner { padding: 10px 14px; }
-  .header-title { font-size: 15px; }
-  .header-sub { display: none; }
-  .desk-only { display: none !important; }
-}
-
-/* ─── EDIT LAYOUT OVERLAY ─── */
-.el-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:600; align-items:center; justify-content:center; }
-.el-overlay.open { display:flex; }
-.el-box { background:var(--white); border-radius:14px; width:680px; max-width:96vw; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(31,56,100,0.28); overflow:hidden; }
-.el-header { background:var(--navy); padding:16px 22px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
-.el-header-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--white); font-weight:700; }
-.el-header-close { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#fff; width:30px; height:30px; border-radius:6px; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.el-body { overflow-y:auto; padding:18px; flex:1; }
-.el-row { display:flex; align-items:center; gap:8px; background:var(--white); border:1.5px solid var(--border); border-radius:9px; padding:10px 12px; margin-bottom:8px; cursor:grab; transition:box-shadow 0.15s; }
-.el-row:active { cursor:grabbing; box-shadow:0 4px 16px rgba(31,56,100,0.18); }
-.el-handle { font-size:18px; color:var(--muted); cursor:grab; flex-shrink:0; }
-.el-row-body { flex:1; display:flex; flex-direction:column; gap:5px; min-width:0; }
-.el-title-input { width:100%; border:1px solid var(--border); border-radius:5px; padding:5px 8px; font-family:'Source Sans 3',sans-serif; font-size:13px; font-weight:600; color:var(--navy); background:transparent; outline:none; }
-.el-title-input:focus { border-color:var(--steel); background:var(--pale); }
-.el-subtitle-input { width:100%; border:1px solid transparent; border-radius:5px; padding:4px 8px; font-family:'Source Sans 3',sans-serif; font-size:11px; color:var(--muted); background:transparent; outline:none; }
-.el-subtitle-input:focus { border-color:var(--border); background:var(--pale); }
-.el-row-actions { display:flex; gap:4px; align-items:center; flex-shrink:0; }
-.el-btn { width:28px; height:28px; border:1.5px solid var(--border); background:var(--pale); color:var(--ink); border-radius:6px; cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center; transition:background 0.12s; padding:0; }
-.el-btn:hover:not([disabled]) { background:var(--light); border-color:var(--steel); }
-.el-btn[disabled] { opacity:0.3; cursor:default; }
-.el-btn.el-del { color:var(--red); border-color:#E0C8C8; }
-.el-btn.el-del:hover { background:#FAE8E8; }
-.el-builtin-badge { font-size:9px; font-family:'DM Mono',monospace; color:var(--muted); background:var(--light); border:1px solid var(--border); padding:2px 6px; border-radius:4px; white-space:nowrap; }
-.el-footer { padding:14px 18px; border-top:1.5px solid var(--border); display:flex; gap:8px; flex-wrap:wrap; align-items:center; flex-shrink:0; }
-.el-tpl-wrap { display:none; align-items:center; gap:6px; width:100%; margin-top:6px; }
-.el-tpl-wrap input { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:7px; font-size:13px; font-family:'Source Sans 3',sans-serif; color:var(--ink); outline:none; }
-.el-tpl-wrap input:focus { border-color:var(--steel); }
-body.dark .el-box { background:#131e2b; }
-body.dark .el-row { background:#1a2a3a; border-color:#2a3a4a; }
-body.dark .el-title-input, body.dark .el-subtitle-input { color:#d4dbe8; }
-body.dark .el-title-input:focus, body.dark .el-subtitle-input:focus { background:#0f1923; }
-body.dark .el-btn { background:#0f1923; color:#d4dbe8; border-color:#2a3a4a; }
-body.dark .el-btn:hover:not([disabled]) { background:#1a2a3a; }
-body.dark .el-builtin-badge { background:#1a2a3a; color:#8a9bb8; border-color:#2a3a4a; }
-body.dark .el-footer { border-color:#2a3a4a; }
-body.dark .el-tpl-wrap input { background:#0f1923; color:#d4dbe8; border-color:#2a3a4a; }
-
-/* ══════════════════════════════════════════════════════════════
-   THEME EDITOR OVERLAY
-══════════════════════════════════════════════════════════════ */
-#themeOverlay { display:none; position:fixed; inset:0; z-index:600; background:var(--bg); overflow-y:auto; -webkit-overflow-scrolling:touch; }
-#themeOverlay.open { display:block; }
-.te-header { position:sticky; top:0; z-index:10; background:var(--navy); padding:14px 18px; display:flex; align-items:center; gap:12px; box-shadow:0 2px 10px rgba(0,0,0,0.2); }
-.te-header-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:#fff; flex:1; }
-.te-header-sub { font-size:11px; color:#7A9CC8; margin-top:1px; }
-.te-body { max-width:600px; margin:0 auto; padding:20px 16px 80px; }
-.te-section { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:18px; margin-bottom:16px; }
-.te-section-title { font-family:'Playfair Display',serif; font-size:14px; font-weight:600; color:var(--navy); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
-.te-row { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-.te-row:last-child { margin-bottom:0; }
-.te-label { font-size:12px; font-weight:600; color:var(--navy); text-transform:uppercase; letter-spacing:0.06em; flex:1; }
-.te-color-wrap { display:flex; align-items:center; gap:8px; }
-.te-color-swatch { width:36px; height:36px; border-radius:8px; border:2px solid var(--border); cursor:pointer; padding:0; -webkit-tap-highlight-color:transparent; overflow:hidden; }
-.te-color-swatch input[type=color] { width:44px; height:44px; border:none; padding:0; margin:-4px; cursor:pointer; background:none; }
-.te-color-hex { font-family:'DM Mono',monospace; font-size:12px; color:var(--ink); border:1.5px solid var(--border); border-radius:6px; padding:6px 10px; width:90px; }
-.te-font-select { flex:1; max-width:240px; }
-.te-preset-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
-.te-preset-card { border:2px solid var(--border); border-radius:10px; padding:12px; cursor:pointer; transition:border-color 0.15s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
-.te-preset-card:hover { border-color:var(--gold); }
-.te-preset-card.active { border-color:var(--gold); background:var(--pale); }
-.te-preset-name { font-weight:600; font-size:13px; color:var(--navy); margin-bottom:6px; }
-.te-preset-swatches { display:flex; gap:4px; }
-.te-preset-dot { width:18px; height:18px; border-radius:50%; border:1px solid rgba(0,0,0,0.1); }
-.te-preview { background:var(--pale); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:16px; }
-.te-preview-title { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; }
-.te-preview-card { background:var(--white); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
-.te-preview-head { padding:10px 14px; }
-.te-preview-body { padding:12px 14px; }
-.te-preview-field { height:32px; border:1.5px solid var(--border); border-radius:6px; background:var(--white); }
-
-
-/* ══════════════════════════════════════════════════════════════
-   INTERACTIVE WALKTHROUGH
-══════════════════════════════════════════════════════════════ */
-#wtOverlay { display:none; position:fixed; inset:0; z-index:700; pointer-events:none; }
-#wtOverlay.open { display:block; }
-#wtBackdrop { position:absolute; inset:0; background:rgba(0,0,0,0.55); pointer-events:all; }
-#wtTooltip {
-  position:absolute; z-index:10; pointer-events:all;
-  background:var(--white); border-radius:14px; padding:18px 20px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.25); width:300px; max-width:90vw;
-  border:2px solid var(--gold);
-  max-height:60vh; overflow-y:auto; -webkit-overflow-scrolling:touch;
-}
-#wtTooltip.wt-bottom { top:auto; }
-.wt-step-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:6px; }
-.wt-title { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--navy); margin-bottom:8px; }
-.wt-body  { font-size:13px; color:var(--ink); line-height:1.6; margin-bottom:14px; }
-.wt-actions { display:flex; gap:8px; align-items:center; }
-.wt-btn-next { background:var(--navy); color:#fff; border:none; border-radius:7px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; flex:1; }
-.wt-btn-next:hover { background:var(--steel); }
-.wt-btn-skip { background:none; border:none; color:var(--muted); font-size:12px; cursor:pointer; -webkit-tap-highlight-color:transparent; padding:4px 8px; }
-.wt-progress { display:flex; gap:5px; margin-right:auto; }
-.wt-dot { width:7px; height:7px; border-radius:50%; background:var(--border); transition:background 0.2s; }
-.wt-dot.active { background:var(--gold); }
-.wt-dot.done   { background:var(--navy); }
-#wtHighlight {
-  position:absolute; z-index:5; border-radius:10px;
-  box-shadow:0 0 0 4px var(--gold), 0 0 0 9999px rgba(0,0,0,0.01);
-  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
-  pointer-events:none;
-}
-
-/* Updated guide ── tabs */
-.guide-tabs { display:flex; border-bottom:1px solid var(--border); }
-.guide-tab { flex:1; padding:10px 8px; font-size:13px; font-weight:600; text-align:center; cursor:pointer; color:var(--muted); border-bottom:2px solid transparent; background:none; border-top:none; border-left:none; border-right:none; font-family:'Source Sans 3',sans-serif; -webkit-tap-highlight-color:transparent; transition:all 0.15s; }
-.guide-tab.active { color:var(--navy); border-bottom-color:var(--gold); }
-#guideTabRef   { }
-#guideTabWalk  { }
-
-</style>
-</head>
-<body>
-
-<!-- HEADER -->
-<header class="app-header">
-  <div class="header-inner">
-    <div class="header-brand">
-      <button class="hamburger" onclick="openDrawer()" title="Navigate sections">☰</button>
-      <div class="header-icon">📋</div>
-      <div>
-        <div class="header-title">LessonCraft</div>
-        <div class="header-sub">Ontario Curriculum — Three-Part Lesson Framework</div>
-      </div>
-    </div>
-    <div class="header-actions">
-      <span class="version-badge desk-only">v2.0</span>
-      <!-- Desktop: overflow dropdown -->
-      <div class="overflow-menu-wrap desk-only">
-        <button class="btn-header" onclick="toggleOverflow(event)" title="More options">⋯</button>
-        <div class="overflow-menu" id="overflowMenu">
-          <button class="overflow-item" onclick="openGuide();closeOverflow()">📖 User Guide</button>
-          <button class="overflow-item" onclick="openPromptDialog();closeOverflow()">🤖 AI Interview Prompt</button>
-          <button class="overflow-item" onclick="openImportDialog();closeOverflow()">📂 Import Draft</button>
-          <button class="overflow-item" onclick="toggleDark();closeOverflow()" id="darkItem">🌙 Dark Mode</button>
-          <hr class="overflow-divider">
-          <button class="overflow-item" onclick="openEditLayout()">✏️ Edit Layout</button>
-          <button class="overflow-item" onclick="openThemeEditor()">🎨 Theme Editor</button>
-          <hr class="overflow-divider">
-          <button class="overflow-item overflow-danger" onclick="clearAll();closeOverflow()">🗑 Clear Form</button>
-        </div>
-      </div>
-      <!-- Mobile: panel toggle (hidden on desktop) -->
-      <button class="btn-header mob-only" onclick="toggleMobPanel()" id="mobMenuBtn" title="More options">⋯</button>
-      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importFromFile(event)">
-      <button class="btn btn-secondary" onclick="saveDraft()">💾 Save</button>
-      <button class="btn btn-gold" onclick="exportDocx()">⬇ Export</button>
-    </div>
-  </div>
-  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
-  <!-- Mobile actions panel — opens below header -->
-  <div class="mob-panel" id="mobPanel">
-    <button class="mob-panel-btn" onclick="openGuide();closeMobPanel()">📖 User Guide</button>
-    <button class="mob-panel-btn" onclick="openPromptDialog();closeMobPanel()">🤖 AI Prompt</button>
-    <button class="mob-panel-btn" onclick="openImportDialog();closeMobPanel()">📂 Import</button>
-    <button class="mob-panel-btn" onclick="toggleDark();closeMobPanel()" id="darkItemMob">🌙 Dark Mode</button>
-    <button class="mob-panel-btn" onclick="openEditLayout();closeMobPanel()">✏️ Edit Layout</button>
-    <button class="mob-panel-btn" onclick="openThemeEditor();closeMobPanel()">🎨 Theme Editor</button>
-    <button class="mob-panel-btn danger" onclick="clearAll();closeMobPanel()">🗑 Clear</button>
-  </div>
-</header>
-
-<!-- MOBILE DRAWER -->
-<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
-<div class="drawer" id="drawer">
-  <div class="drawer-header">
-    <span class="drawer-title">Sections</span>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
-  </div>
-  <a class="nav-item active" href="#s1" onclick="setNav(this);closeDrawer()"><span class="nav-num">1</span> Lesson Info <span class="nav-check">✓</span></a>
-  <a class="nav-item" href="#s2" onclick="setNav(this);closeDrawer()"><span class="nav-num">2</span> Curriculum <span class="nav-check">✓</span></a>
-  <a class="nav-item" href="#s3" onclick="setNav(this);closeDrawer()"><span class="nav-num">3</span> Goals & Criteria <span class="nav-check">✓</span></a>
-  <a class="nav-item" href="#s4" onclick="setNav(this);closeDrawer()"><span class="nav-num">4</span> Achievement Chart <span class="nav-check">✓</span></a>
-  <a class="nav-item" href="#s5" onclick="setNav(this);closeDrawer()"><span class="nav-num">5</span> Assessment <span class="nav-check">✓</span></a>
-  <a class="nav-item" href="#s6" onclick="setNav(this);closeDrawer()"><span class="nav-num">6</span> Planning Notes <span class="nav-check">✓</span></a>
-  <a class="nav-item" href="#s7" onclick="setNav(this);closeDrawer()"><span class="nav-num">7</span> Three-Part Lesson <span class="nav-check">✓</span></a>
-  <a class="nav-item" href="#s8" onclick="setNav(this);closeDrawer()"><span class="nav-num">8</span> Learning Skills <span class="nav-check">✓</span></a>
-</div>
-
-<div class="app-body">
-
-  <!-- SIDEBAR NAV -->
-  <nav class="sidebar">
-    <div class="sidebar-label">Sections</div>
-    <a class="nav-item active" href="#s1" onclick="setNav(this)"><span class="nav-num">1</span> Lesson Info <span class="nav-check">✓</span></a>
-    <a class="nav-item" href="#s2" onclick="setNav(this)"><span class="nav-num">2</span> Curriculum <span class="nav-check">✓</span></a>
-    <a class="nav-item" href="#s3" onclick="setNav(this)"><span class="nav-num">3</span> Goals & Criteria <span class="nav-check">✓</span></a>
-    <a class="nav-item" href="#s4" onclick="setNav(this)"><span class="nav-num">4</span> Achievement Chart <span class="nav-check">✓</span></a>
-    <a class="nav-item" href="#s5" onclick="setNav(this)"><span class="nav-num">5</span> Assessment <span class="nav-check">✓</span></a>
-    <a class="nav-item" href="#s6" onclick="setNav(this)"><span class="nav-num">6</span> Planning Notes <span class="nav-check">✓</span></a>
-    <a class="nav-item" href="#s7" onclick="setNav(this)"><span class="nav-num">7</span> Three-Part Lesson <span class="nav-check">✓</span></a>
-    <a class="nav-item" href="#s8" onclick="setNav(this)"><span class="nav-num">8</span> Learning Skills <span class="nav-check">✓</span></a>
-  </nav>
-
-  <div class="main-content">
-
-    <!-- PROGRESS -->
-    <div class="completion-strip">
-      <div class="completion-label">Plan Completion</div>
-      <div class="completion-track"><div class="completion-fill" id="completionFill"></div></div>
-      <div class="completion-pct" id="completionPct">0%</div>
-    </div>
-
-    <!-- SECTION CONTAINER (data-driven v2.0) -->
-    <div id="sectionContainer"></div>
-
-    <!-- EXPORT -->
-    <div class="generate-card">
-      <div>
-        <h3>Ready to export your lesson plan?</h3>
-        <p>Exports as a professionally formatted DOCX file — ready to print or submit.</p>
-      </div>
-      <button class="btn btn-gold" onclick="exportDocx()" style="white-space:nowrap;font-size:15px;padding:13px 26px">⬇ Export DOCX</button>
-    </div>
-
-  </div><!-- /main-content -->
-</div><!-- /app-body -->
-
-
-<!-- EDIT LAYOUT OVERLAY -->
-<div class="el-overlay" id="editLayoutOverlay">
-  <div class="el-box">
-    <div class="el-header">
-      <span class="el-header-title">✏️ Edit Layout</span>
-      <button class="el-header-close" onclick="closeEditLayout()">✕</button>
-    </div>
-    <div class="el-body">
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6">Drag sections to reorder. Click a title to rename. Toggle 👁 to hide/show. Add custom sections below.</p>
-      <div id="elSectionList"></div>
-      <button class="btn btn-secondary" onclick="elAddCustomSection()" style="width:100%;justify-content:center;margin-top:4px;font-size:13px">+ Add Custom Section</button>
-    </div>
-    <div class="el-footer">
-      <button class="btn btn-secondary" onclick="elResetLayout()" style="font-size:12px">↺ Reset to Default</button>
-      <button class="btn btn-secondary" onclick="elSaveTemplate()" style="font-size:12px">💾 Save as Template</button>
-      <button class="btn btn-primary" onclick="elApplyLayout()" style="margin-left:auto">✓ Apply Layout</button>
-      <div class="el-tpl-wrap" id="elTplNameWrap">
-        <input type="text" id="elTplNameInput" placeholder="Template name…" onkeydown="if(event.key==='Enter')elConfirmSaveTemplate();if(event.key==='Escape')elCancelSaveTemplate()">
-        <button class="btn btn-primary" onclick="elConfirmSaveTemplate()" style="font-size:12px;padding:7px 12px">Save</button>
-        <button class="btn btn-secondary" onclick="elCancelSaveTemplate()" style="font-size:12px;padding:7px 10px">✕</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<!-- SAVE DIALOG -->
-<div class="dialog-overlay" id="saveDialog">
-  <div class="dialog-box">
-    <div class="dialog-title">Save Draft</div>
-    <label class="field-label" style="margin-bottom:6px;display:block">File name</label>
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
-      <input type="text" id="saveFilename" placeholder="lesson-plan" style="margin-bottom:0;flex:1">
-      <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap">.json</span>
-    </div>
-    <div class="dialog-actions">
-      <button class="btn btn-secondary" onclick="closeSaveDialog()">Cancel</button>
-      <button class="btn btn-primary" onclick="confirmSave()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- EXPORT DIALOG -->
-<div class="dialog-overlay" id="exportDialog">
-  <div class="dialog-box">
-    <div class="dialog-title">Export Lesson Plan</div>
-    <label class="field-label" style="margin-bottom:6px;display:block">File name</label>
-    <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px">
-      <input type="text" id="exportFilename" placeholder="Lesson_Plan" style="margin-bottom:0;flex:1">
-      <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);white-space:nowrap">.docx</span>
-    </div>
-    <div class="dialog-actions">
-      <button class="btn btn-secondary" onclick="closeExportDialog()">Cancel</button>
-      <button class="btn btn-gold" onclick="confirmExport()">⬇ Export DOCX</button>
-    </div>
-  </div>
-</div>
-
-<!-- IMPORT DIALOG -->
-<div class="dialog-overlay" id="importDialog">
-  <div class="dialog-box" style="width:440px;max-width:95vw">
-    <div class="dialog-title">Import Lesson Plan</div>
-    <div class="import-tabs">
-      <button class="import-tab active" id="tabFile" onclick="switchImportTab('file')">📂 From File</button>
-      <button class="import-tab" id="tabPaste" onclick="switchImportTab('paste')">📋 Paste JSON</button>
-      <button class="import-tab" id="tabTemplate" onclick="switchImportTab('template')">📋 Templates</button>
-    </div>
-    <div class="import-tab-body" id="importFilePanel">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Choose a .json file saved from this tool or generated by an AI assistant.</p>
-      <button class="btn btn-secondary" style="width:100%;justify-content:center" onclick="document.getElementById('importFile').click()">📂 Choose File…</button>
-    </div>
-    <div class="import-tab-body" id="importPastePanel" style="display:none">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Paste the JSON from your AI assistant below, then click Import.</p>
-      <textarea class="paste-area" id="pasteArea" placeholder='{ "teacherName": "...", "lessonTitle": "...", ... }'></textarea>
-      <p id="pasteError" style="font-size:12px;color:var(--red);margin-top:6px;display:none"></p>
-    </div>
-    <div class="import-tab-body" id="importTemplatePanel" style="display:none">
-      <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Start with a pre-built structure. Built-in templates load instantly. Click "Load Online Templates" for subject-specific lesson starters.</p>
-      <div id="templateList" style="max-height:240px;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
-      <div id="templatePreview" style="display:none;margin-top:10px;padding:10px;background:var(--pale);border-radius:8px;border:1px solid var(--border)">
-        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:3px" id="tplPreviewTitle"></div>
-        <div style="font-size:11px;color:var(--muted)" id="tplPreviewDesc"></div>
-      </div>
-    </div>
-    <div class="dialog-actions">
-      <button class="btn btn-secondary" onclick="closeImportDialog()">Cancel</button>
-      <button class="btn btn-primary" id="importConfirmBtn" onclick="confirmImport()">Import</button>
-    </div>
-  </div>
-</div>
-
-<!-- AI PROMPT DIALOG -->
-<div class="dialog-overlay" id="promptDialog">
-  <div class="dialog-box" style="width:580px;max-width:95vw">
-    <div class="dialog-title">🤖 AI Interview Prompt</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6">Copy this prompt and paste it into any AI assistant (ChatGPT, Claude, Gemini…). The AI will have a friendly conversation with you to gather your lesson details, then produce a JSON you can import directly into this tool.</p>
-    <div class="prompt-box" id="promptBox"></div>
-    <div class="dialog-actions">
-      <button class="btn btn-secondary" onclick="closePromptDialog()">Close</button>
-      <button class="btn btn-primary" onclick="copyPrompt()">📋 Copy Prompt</button>
-    </div>
-  </div>
-</div>
-
-<!-- USER GUIDE -->
-<div class="guide-overlay" id="guidePanel">
-  <div class="guide-header">
-    <span class="guide-header-title">📖 LessonCraft — User Guide</span>
-    <button class="guide-close" onclick="closeGuide()">✕ Close</button>
-  </div>
-
-  <!-- Tab nav -->
-  <div class="guide-tabs">
-    <button class="guide-tab active" id="guideTabWalk" onclick="guideTab('walk')">🚶 Walkthrough</button>
-    <button class="guide-tab"        id="guideTabRef"  onclick="guideTab('ref')">📖 Reference</button>
-  </div>
-
-  <!-- REFERENCE TAB -->
-  <div class="guide-body" id="guideBodyRef" style="display:none">
-
-    <div class="guide-section">
-      <h2>Welcome to LessonCraft</h2>
-      <p>LessonCraft helps Ontario educators create structured, curriculum-aligned lesson plans and export them as professionally formatted Word documents. Everything runs in your browser — no account, no login, nothing sent to a server.</p>
-      <div class="guide-tip">💡 Your work auto-saves to your browser. Close the tab and come back — it will still be there.</div>
-    </div>
-
-    <div class="guide-section">
-      <h2>The Sections</h2>
-      <h3>1 — Lesson Information</h3><p>Teacher name, date, duration, grade, strand, and lesson title. These appear in the document header on export.</p>
-      <h3>2 — Curriculum Connections</h3><p>Overall Expectations (broad curriculum goals) and Specific Expectations (measurable, lesson-level outcomes). Use <strong>+ Add</strong> for multiple entries.</p>
-      <h3>3 — Learning Goals & Success Criteria</h3><p>"We are learning to…" goals and "I can…" success criteria. Aim for 2–4 of each.</p>
-      <h3>4 — Achievement Chart</h3><p>How this lesson addresses Knowledge & Understanding, Thinking, Communication, and Application.</p>
-      <h3>5 — Assessment</h3><p>Diagnostic (before), Formative/For Learning (during), As Learning (self-assessment), Summative/Of Learning (end product), plus strategies and tools.</p>
-      <h3>6 — Considerations for Planning</h3><p>Prior learning, IEP/ELL differentiation, technology, and materials needed.</p>
-      <h3>7 — Three-Part Lesson</h3>
-      <ul>
-        <li><strong>Minds On</strong> — hook activity, activates prior knowledge (~10–15%)</li>
-        <li><strong>Action</strong> — working activities (~60%). Add as many as needed with <strong>+ Add Activity</strong>.</li>
-        <li><strong>Consolidation</strong> — bring learning together (~10–20%)</li>
-      </ul>
-      <h3>8 — Learning Skills</h3><p>Check relevant skills and add observable "I can" criteria. Focus on 2–3 maximum.</p>
-    </div>
-
-    <div class="guide-section">
-      <h2>Saving & Loading</h2>
-      <h3>💾 Save</h3><p>Downloads your plan as a <code>.json</code> file for backup or moving between devices.</p>
-      <h3>⋯ → 📂 Import</h3><p>Load a draft from a file, paste JSON from an AI, or start from a <strong>Template</strong>.</p>
-      <div class="guide-tip">💡 Importing overwrites the current form. Save first if needed.</div>
-    </div>
-
-    <div class="guide-section">
-      <h2>✏️ Edit Layout</h2>
-      <p>Open <strong>⋯ → Edit Layout</strong> to customise the form structure:</p>
-      <ul>
-        <li><strong>↑ ↓</strong> — reorder sections</li>
-        <li><strong>Click title</strong> — rename a section</li>
-        <li><strong>👁 / ○</strong> — show or hide a section</li>
-        <li><strong>+ Add Section</strong> — add a custom blank section</li>
-        <li><strong>Save as Template</strong> — save your layout for reuse</li>
-      </ul>
-      <div class="guide-tip">💡 Click <strong>✓ Apply Layout</strong> to save changes and re-render the form.</div>
-    </div>
-
-    <div class="guide-section">
-      <h2>🎨 Theme Editor</h2>
-      <p>Open <strong>⋯ → Theme Editor</strong> to personalise the look:</p>
-      <ul>
-        <li><strong>Presets</strong> — 6 ready-made colour schemes (Classic Blue, Forest Green, Slate, Burgundy, Midnight, Minimal)</li>
-        <li><strong>Colors</strong> — customise primary, secondary, highlight, background, and body text individually</li>
-        <li><strong>Fonts</strong> — choose heading and body typefaces independently</li>
-      </ul>
-      <p>Your theme applies to both the app and the exported DOCX. It travels with your <code>.json</code> draft — import on another device and the theme is restored.</p>
-      <div class="guide-tip">💡 Click <strong>✓ Apply</strong> to save. Close without applying reverts to the last saved theme.</div>
-    </div>
-
-    <div class="guide-section">
-      <h2>📋 Templates</h2>
-      <p>Open <strong>⋯ → 📂 Import → Templates tab</strong>. Built-in templates load instantly. Click <strong>☁ Load Online Templates</strong> to fetch subject-specific starters from the template library.</p>
-      <p>Save your own templates from the Edit Layout screen — they include your layout, section titles, and current form data.</p>
-    </div>
-
-    <div class="guide-section">
-      <h2>🤖 AI Assistant</h2>
-      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-body">Open <strong>⋯ → 🤖 AI Interview Prompt</strong> and copy the prompt.</div></div>
-      <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-body">Paste into Claude, ChatGPT, Gemini, or any AI. Have a natural conversation — skip anything you're unsure about.</div></div>
-      <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-body">The AI produces a JSON block. Copy it.</div></div>
-      <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-body">Open <strong>⋯ → 📂 Import → Paste JSON</strong>, paste it in, and click Import.</div></div>
-      <div class="guide-tip">💡 Review imported content carefully — treat it as a first draft.</div>
-    </div>
-
-  </div>
-
-  <!-- WALKTHROUGH TAB -->
-  <div class="guide-body" id="guideBodyWalk">
-    <div class="guide-section">
-      <h2>Interactive Walkthrough</h2>
-      <p>The walkthrough highlights each part of the app and guides you through a complete lesson plan from start to finish. It works best on a phone or tablet.</p>
-      <div class="guide-tip">💡 You can stop at any time by clicking Skip in the walkthrough tooltip.</div>
-      <button onclick="startWalkthrough()" style="margin-top:14px;width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'Source Sans 3',sans-serif">
-        🚶 Start Walkthrough
-      </button>
-    </div>
-    <div class="guide-section">
-      <h2>What the walkthrough covers</h2>
-      <ul style="line-height:2">
-        <li>The header — Save, Export, and the ⋯ menu</li>
-        <li>Progress tracking</li>
-        <li>Filling in Lesson Information</li>
-        <li>Adding curriculum expectations</li>
-        <li>Writing Learning Goals & Success Criteria</li>
-        <li>Building the Three-Part Lesson</li>
-        <li>Exporting your plan as a DOCX</li>
-        <li>Edit Layout — reordering and renaming</li>
-        <li>Theme Editor — colours and fonts</li>
-      </ul>
-    </div>
-  </div>
-
-</div>
-
-ml>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1F3864">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LessonCraft">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<title>LessonCraft v2.0</title>
-<script>
-// Load docx library with fallback CDN
-(function() {
-  var s = document.createElement('script');
-  s.src = 'https://unpkg.com/docx@8.5.0/build/index.umd.js';
-  s.onerror = function() {
-    var s2 = document.createElement('script');
-    s2.src = 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js';
-    document.head.appendChild(s2);
-  };
-  document.head.appendChild(s);
-})();
 
 // ══════════════════════════════════════════════════════════════════════════════
 // LESSONCRAFT — INTERACTIVE WALKTHROUGH
@@ -730,66 +30,78 @@ ml>
 var WT_STEPS = [
   {
     target:  null,
-    title:   'Welcome to LessonCraft! 👋',
-    body:    'This short walkthrough will show you everything — from filling in your first section to exporting a polished Word document. Tap <strong>Next</strong> to begin, or <strong>Skip</strong> anytime.',
+    title:   'Welcome to LessonCraft!',
+    body:    'This walkthrough covers everything — filling in your lesson, exporting a Word doc, generating a presentation, and customising your layout and theme. Tap <strong>Next</strong> to begin.',
     pos:     'center'
   },
   {
     target:  '.app-header',
     title:   'The Header',
-    body:    '<strong>💾 Save</strong> downloads a .json backup. <strong>⬇ Export</strong> generates your Word document. The <strong>⋯</strong> menu holds Edit Layout, Theme Editor, Import, AI Assistant, and Dark Mode.',
+    body:    '<strong>💾 Save</strong> downloads a .json backup. <strong>⬇ Export</strong> generates your Word document. The <strong>⋯</strong> menu holds Edit Layout, Theme Editor, Import, AI Prompt, and Dark Mode.',
     pos:     'below'
   },
   {
     target:  '.completion-strip',
     title:   'Progress Tracking',
-    body:    'The gold bar and percentage show how complete your plan is. It updates as you fill in required fields. Aim for 100% before exporting.',
+    body:    'The gold bar and percentage show how complete your plan is. It updates as you fill in required fields marked with <span style="color:var(--gold);font-weight:700">*</span>. Aim for 100% before exporting.',
     pos:     'below'
   },
   {
     target:  '#s1',
     title:   'Step 1 — Lesson Information',
-    body:    'Start here. Fill in teacher name, date, duration, grade and subject, strand, and lesson title. Fields marked <span style="color:var(--gold);font-weight:700">*</span> are required.',
+    body:    'Start here. Fill in teacher name, date, duration, grade and subject, strand, and lesson title. These appear in the header of your exported document.',
     pos:     'below'
   },
   {
     target:  '#s3',
     title:   'Learning Goals & Success Criteria',
-    body:    'Write "We are learning to…" goals and "I can…" success criteria. Use the <strong>+ Add</strong> buttons to include multiple entries. Aim for 2–4 of each.',
+    body:    'Write "We are learning to..." goals and "I can..." success criteria. Use the <strong>+ Add</strong> buttons for multiple entries. Aim for 2-4 of each.',
     pos:     'below'
   },
   {
     target:  '#s7',
     title:   'The Three-Part Lesson',
-    body:    '<strong>Minds On</strong> is your hook (~15%). <strong>Action</strong> is the main work (~60%) — add as many activities as you need. <strong>Consolidation</strong> brings it together (~20%).',
+    body:    '<strong>Minds On</strong> is your hook activity. <strong>Action</strong> is the main work — tap <strong>+ Add Activity</strong> for each activity block. <strong>Consolidation</strong> brings it together.',
     pos:     'below'
   },
   {
     target:  '.generate-card',
-    title:   'Export Your Plan',
-    body:    'When your plan is ready, click <strong>⬇ Export DOCX</strong> to download a professionally formatted Word document. Your theme colours apply here too.',
+    title:   'Export DOCX',
+    body:    'Tap <strong>⬇ Export DOCX</strong> to download a professionally formatted Word document. Section headers, tables, and colours all reflect your chosen theme.',
+    pos:     'above'
+  },
+  {
+    target:  '.generate-card',
+    title:   'Export PPTX',
+    body:    'Tap <strong>📊 Export PPTX</strong> to open the presentation dialog. Choose which slides to include, pick a layout style (Ontario Classic, Modern Clean, Bold Visual, Soft Pastel), and select a colour theme — with a live preview.',
     pos:     'above'
   },
   {
     target:  null,
-    title:   '✏️ Edit Layout',
-    body:    'Open <strong>⋯ → Edit Layout</strong> to reorder sections, rename them, hide sections you do not need, or add custom sections. Save your layout as a reusable template.',
+    title:   'Edit Layout',
+    body:    'Open <strong>⋯ → Edit Layout</strong> to reorder sections with ↑↓, rename them by typing in the title field, hide sections with the eye toggle, or add custom blank sections. Save your layout as a reusable template.',
     pos:     'center'
   },
   {
     target:  null,
-    title:   '🎨 Theme Editor',
-    body:    'Open <strong>⋯ → Theme Editor</strong> to change colours and fonts. Choose from 6 presets or customise every colour individually. Your theme travels with your exported plan.',
+    title:   'Theme Editor',
+    body:    'Open <strong>⋯ → Theme Editor</strong> to change colours and fonts. Choose from 6 presets or customise every colour. Your theme applies to both the DOCX and PPTX exports and travels with your saved draft.',
+    pos:     'center'
+  },
+  {
+    target:  null,
+    title:   'Templates',
+    body:    'Open <strong>⋯ → Import → Templates tab</strong> to start from a pre-built lesson structure. Built-in templates load instantly. Tap <strong>☁ Load Online Templates</strong> for Math, Science, Language Arts, and Social Studies starters.',
     pos:     'center'
   },
   {
     target:  null,
     title:   "You're ready! 🎉",
-    body:    'All done. Fill in each section top to bottom, export when done, and use the ⋯ menu to customise anytime. The <strong>📖 User Guide</strong> is always available in the ⋯ menu.',
+    body:    'Fill in each section top to bottom, export when done, and use the ⋯ menu to customise anytime. The <strong>📖 User Guide</strong> is always one tap away.',
     pos:     'center',
     last:    true
   }
-];
+]
 
 var _wtStep = 0;
 
@@ -1246,7 +558,71 @@ body.dark .el-tpl-wrap input { background:#0f1923; color:#d4dbe8; border-color:#
 #guideTabRef   { }
 #guideTabWalk  { }
 
+
+/* ══════════════════════════════════════════════════════════════
+   PPTX EXPORT DIALOG
+══════════════════════════════════════════════════════════════ */
+#pptxOverlay { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,0.65); align-items:flex-start; justify-content:center; padding:20px 16px; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+#pptxOverlay.open { display:flex; }
+.pptx-box { background:var(--white); border-radius:14px; width:100%; max-width:480px; overflow:hidden; box-shadow:0 16px 48px rgba(0,0,0,0.3); display:flex; flex-direction:column; max-height:85vh; margin:auto; }
+.pptx-header { background:var(--navy); padding:14px 18px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.pptx-header-title { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:#fff; flex:1; }
+.pptx-tabs { display:flex; border-bottom:1px solid var(--border); flex-shrink:0; background:var(--white); }
+.pptx-tab { flex:1; padding:10px 6px; font-size:12px; font-weight:600; text-align:center; cursor:pointer; color:var(--muted); border:none; border-bottom:2px solid transparent; background:none; font-family:'Source Sans 3',sans-serif; -webkit-tap-highlight-color:transparent; transition:all 0.15s; }
+.pptx-tab.active { color:var(--navy); border-bottom-color:var(--gold); }
+.pptx-body { overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1; padding:14px 18px; min-height:200px; }
+.pptx-footer { padding:12px 18px; border-top:1px solid var(--border); display:flex; gap:10px; flex-shrink:0; background:var(--white); }
+.pptx-section-title { font-size:11px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; margin-top:14px; }
+.pptx-section-title:first-child { margin-top:0; }
+.pptx-slide-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--pale); }
+.pptx-slide-row:last-child { border-bottom:none; }
+.pptx-slide-icon { width:32px; height:22px; border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:12px; background:var(--pale); }
+.pptx-slide-label { flex:1; font-size:13px; color:var(--ink); }
+.pptx-slide-toggle { width:40px; height:22px; border-radius:11px; border:none; cursor:pointer; transition:background 0.2s; flex-shrink:0; -webkit-tap-highlight-color:transparent; position:relative; }
+.pptx-slide-toggle.on  { background:var(--navy); }
+.pptx-slide-toggle.off { background:var(--border); }
+.pptx-slide-toggle::after { content:''; position:absolute; width:16px; height:16px; border-radius:50%; background:#fff; top:3px; transition:left 0.2s; }
+.pptx-slide-toggle.on::after  { left:21px; }
+.pptx-slide-toggle.off::after { left:3px; }
+.pptx-layout-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.pptx-layout-card { border:2px solid var(--border); border-radius:10px; padding:10px; cursor:pointer; transition:border-color 0.15s; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+.pptx-layout-card.active { border-color:var(--gold); background:var(--pale); }
+.pptx-layout-name { font-weight:600; font-size:12px; color:var(--navy); margin-bottom:3px; }
+.pptx-layout-desc { font-size:10px; color:var(--muted); line-height:1.4; }
+.pptx-theme-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.pptx-theme-swatch { border:2px solid var(--border); border-radius:8px; padding:8px 4px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:border-color 0.15s; text-align:center; }
+.pptx-theme-swatch.active { border-color:var(--gold); background:var(--pale); }
+.pptx-theme-dots { display:flex; gap:3px; justify-content:center; margin-bottom:4px; }
+.pptx-theme-dot { width:12px; height:12px; border-radius:50%; }
+.pptx-theme-name { font-size:9px; color:var(--ink); font-weight:600; }
+
+
+/* PPTX mini preview */
+.pptx-mini-preview { margin-top:14px; border-radius:10px; overflow:hidden; border:1px solid var(--border); aspect-ratio:16/9; position:relative; }
+.pptx-mini-preview-inner { position:absolute; inset:0; display:flex; flex-direction:column; }
+.pptx-mini-header { height:32%; display:flex; align-items:center; padding:0 8%; }
+.pptx-mini-title { font-weight:700; font-size:13px; color:#fff; font-family:Georgia,serif; }
+.pptx-mini-body { flex:1; padding:6% 8%; display:flex; flex-direction:column; gap:6%; }
+.pptx-mini-bar { height:14%; border-radius:3px; }
+.pptx-mini-bar-short { width:60%; }
+.pptx-mini-bar-long  { width:90%; }
+
 </style>
+<script>
+// Load PptxGenJS with fallback
+(function() {
+  function loadPptx(src, fallback) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.onerror = function() { if (fallback) loadPptx(fallback, null); };
+    document.head.appendChild(s);
+  }
+  loadPptx(
+    'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/PptxGenJS/3.12.0/pptxgen.bundle.js'
+  );
+})();
+</script>
 </head>
 <body>
 
@@ -1346,9 +722,12 @@ body.dark .el-tpl-wrap input { background:#0f1923; color:#d4dbe8; border-color:#
     <div class="generate-card">
       <div>
         <h3>Ready to export your lesson plan?</h3>
-        <p>Exports as a professionally formatted DOCX file — ready to print or submit.</p>
+        <p>Export as a formatted Word document or a classroom presentation.</p>
       </div>
-      <button class="btn btn-gold" onclick="exportDocx()" style="white-space:nowrap;font-size:15px;padding:13px 26px">⬇ Export DOCX</button>
+      <div style="display:flex;flex-direction:column;gap:10px;flex-shrink:0">
+        <button class="btn btn-gold" onclick="exportDocx()" style="white-space:nowrap;font-size:14px;padding:11px 22px">⬇ Export DOCX</button>
+        <button class="btn btn-secondary" onclick="openPptxDialog()" style="white-space:nowrap;font-size:14px;padding:11px 22px;background:rgba(255,255,255,0.12);color:#fff;border-color:rgba(255,255,255,0.3)">📊 Export PPTX</button>
+      </div>
     </div>
 
   </div><!-- /main-content -->
@@ -1467,57 +846,131 @@ body.dark .el-tpl-wrap input { background:#0f1923; color:#d4dbe8; border-color:#
     <span class="guide-header-title">📖 LessonCraft — User Guide</span>
     <button class="guide-close" onclick="closeGuide()">✕ Close</button>
   </div>
-  <div class="guide-body">
+
+  <div class="guide-tabs">
+    <button class="guide-tab active" id="guideTabWalk" onclick="guideTab('walk')">🚶 Walkthrough</button>
+    <button class="guide-tab"        id="guideTabRef"  onclick="guideTab('ref')">📖 Reference</button>
+  </div>
+
+  <!-- WALKTHROUGH TAB -->
+  <div class="guide-body" id="guideBodyWalk">
     <div class="guide-section">
-      <h2>Welcome</h2>
-      <p>The LessonCraft helps Ontario educators create structured, curriculum-aligned lesson plans and export them as professionally formatted Word documents. Everything runs in your browser — no account, no login, nothing sent to a server.</p>
-      <div class="guide-tip">💡 Your work saves automatically as you type. Close the tab and come back — it will still be there.</div>
+      <h2>Interactive Walkthrough</h2>
+      <p>The walkthrough highlights each part of the app and guides you through everything — from filling in your first section to exporting a polished Word document and presentation.</p>
+      <div class="guide-tip">💡 You can stop at any time by tapping Skip in the walkthrough tooltip.</div>
+      <button onclick="startWalkthrough()" style="margin-top:14px;width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'Source Sans 3',sans-serif">
+        🚶 Start Walkthrough
+      </button>
     </div>
     <div class="guide-section">
-      <h2>Getting Started</h2>
-      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-body"><strong>Fill in the 8 sections</strong> from top to bottom. Fields marked <span style="color:var(--gold);font-weight:700">*</span> are required.</div></div>
-      <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-body"><strong>Track your progress</strong> with the gold bar at the top and the Plan Completion strip.</div></div>
-      <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-body"><strong>Export when ready</strong> — click <span class="guide-kbd">⬇ Export</span> for a professionally formatted Word document.</div></div>
-    </div>
-    <div class="guide-section">
-      <h2>The 8 Sections</h2>
-      <h3>1 — Lesson Information</h3><p>Teacher name, date, duration, grade and subject, curriculum strand, and lesson title. These appear in the document header on export.</p>
-      <h3>2 — Curriculum Connections</h3><p>Overall Expectations (broad, coded curriculum goals) and Specific Expectations (measurable, lesson-level outcomes). Use <strong>+ Add</strong> to include multiple expectations.</p>
-      <h3>3 — Learning Goals & Success Criteria</h3><p>"We are learning to…" goals and "I can…" success criteria students use to self-assess. Aim for 2–4 of each.</p>
-      <h3>4 — Achievement Chart</h3><p>How this lesson addresses the four Ontario categories: Knowledge & Understanding, Thinking, Communication, and Application.</p>
-      <h3>5 — Assessment</h3><p>Diagnostic (before), Formative/For Learning (during), As Learning (self-assessment), Summative/Of Learning (end product), plus instructional strategies and assessment tools.</p>
-      <h3>6 — Considerations for Planning</h3><p>Prior learning, IEP/ELL differentiation, technology used, and materials needed.</p>
-      <h3>7 — Three-Part Lesson</h3>
-      <ul>
-        <li><strong>Minds On</strong> — hook activity, activates prior knowledge (~10–15%)</li>
-        <li><strong>Action</strong> — main working activities (~60%). Add as many as needed.</li>
-        <li><strong>Consolidation</strong> — bring learning together, check understanding (~10–20%)</li>
-      </ul>
-      <h3>8 — Learning Skills</h3><p>Check relevant skills and add "I can" criteria. Focus on 2–3 maximum.</p>
-    </div>
-    <div class="guide-section">
-      <h2>Saving & Loading</h2>
-      <h3>Auto-Save</h3><p>Saves automatically to browser storage between sessions on the same device.</p>
-      <h3>💾 Save</h3><p>Downloads your plan as a <strong>.json</strong> file for backup, sharing, or moving between devices.</p>
-      <h3>⋯ → 📂 Import</h3><p>Load a draft from a file, or paste JSON directly from an AI assistant.</p>
-      <div class="guide-tip">💡 Importing overwrites the current form. Save first if needed.</div>
-    </div>
-    <div class="guide-section">
-      <h2>Using the AI Assistant</h2>
-      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-body">Open <strong>⋯ → 🤖 AI Interview Prompt</strong> and copy the prompt.</div></div>
-      <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-body">Paste into ChatGPT, Claude, Gemini, or any AI. Have a natural conversation — skip anything you're not sure about.</div></div>
-      <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-body">The AI produces a JSON block. Copy it.</div></div>
-      <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-body">Open <strong>⋯ → 📂 Import → Paste JSON</strong>, paste it in, and click Import.</div></div>
-      <div class="guide-tip">💡 Review imported content carefully — treat it as a first draft.</div>
-    </div>
-    <div class="guide-section">
-      <h2>Other Options (⋯ Menu)</h2>
-      <ul>
-        <li><strong>Dark Mode</strong> — switches to dark colour scheme. Remembered between sessions.</li>
-        <li><strong>Clear Form</strong> — wipes all fields after confirmation.</li>
+      <h2>What the walkthrough covers</h2>
+      <ul style="line-height:2.2">
+        <li>The header — Save, Export, and the ⋯ menu</li>
+        <li>Progress tracking bar</li>
+        <li>Filling in Lesson Information</li>
+        <li>Learning Goals &amp; Success Criteria</li>
+        <li>Building the Three-Part Lesson</li>
+        <li>Export DOCX — professional Word document</li>
+        <li>Export PPTX — classroom presentation with layout &amp; theme picker</li>
+        <li>Edit Layout — reorder, rename, and hide sections</li>
+        <li>Theme Editor — colours and fonts</li>
+        <li>Templates — built-in and online subject starters</li>
       </ul>
     </div>
   </div>
+
+  <!-- REFERENCE TAB -->
+  <div class="guide-body" id="guideBodyRef" style="display:none">
+
+    <div class="guide-section">
+      <h2>Welcome to LessonCraft</h2>
+      <p>LessonCraft helps Ontario educators create structured, curriculum-aligned lesson plans and export them as Word documents or classroom presentations. Everything runs in your browser — no account, no login, nothing sent to a server.</p>
+      <div class="guide-tip">💡 Your work auto-saves to your browser. Close the tab and come back — it will still be there.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>The 8 Sections</h2>
+      <h3>1 — Lesson Information</h3><p>Teacher name, date, duration, grade, strand, and lesson title. These appear in the document header on export.</p>
+      <h3>2 — Curriculum Connections</h3><p>Overall Expectations (broad curriculum goals) and Specific Expectations (measurable, lesson-level outcomes). Use <strong>+ Add</strong> for multiple entries.</p>
+      <h3>3 — Learning Goals &amp; Success Criteria</h3><p>"We are learning to…" goals and "I can…" success criteria. Aim for 2–4 of each.</p>
+      <h3>4 — Achievement Chart</h3><p>How this lesson addresses Knowledge &amp; Understanding, Thinking, Communication, and Application.</p>
+      <h3>5 — Assessment</h3><p>Diagnostic (before), Formative (during), As Learning (self-assessment), Summative (end product), plus strategies and tools.</p>
+      <h3>6 — Considerations for Planning</h3><p>Prior learning, IEP/ELL differentiation, technology, and materials.</p>
+      <h3>7 — Three-Part Lesson</h3>
+      <ul>
+        <li><strong>Minds On</strong> — hook activity, activates prior knowledge (~10–15%)</li>
+        <li><strong>Action</strong> — working activities (~60%). Add as many as needed.</li>
+        <li><strong>Consolidation</strong> — bring learning together (~10–20%)</li>
+      </ul>
+      <h3>8 — Learning Skills</h3><p>Check relevant skills and add "I can" criteria. Focus on 2–3 maximum.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>💾 Saving &amp; Loading</h2>
+      <p><strong>Auto-save</strong> keeps your work in browser storage between sessions.</p>
+      <p><strong>💾 Save</strong> downloads a <code>.json</code> backup you can reload on any device.</p>
+      <p><strong>⋯ → Import</strong> — load from a file, paste JSON from an AI, or start from a Template.</p>
+      <div class="guide-tip">💡 Importing overwrites the current form. Save first if needed.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>⬇ Export DOCX</h2>
+      <p>Scroll to the bottom and tap <strong>⬇ Export DOCX</strong> to download a professionally formatted Word document. Section headers, tables, and colours all reflect your chosen theme.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>📊 Export PPTX</h2>
+      <p>Scroll to the bottom and tap <strong>📊 Export PPTX</strong> to open the presentation export dialog.</p>
+      <ul>
+        <li><strong>Slides tab</strong> — toggle each slide on or off individually. Includes one slide per activity.</li>
+        <li><strong>Layout tab</strong> — choose from Ontario Classic, Modern Clean, Bold Visual, or Soft Pastel. A live mini-preview updates as you pick.</li>
+        <li><strong>Theme tab</strong> — choose from 6 colour themes or match your app theme. Live preview updates instantly.</li>
+      </ul>
+      <div class="guide-tip">💡 Tap Generate PPTX to download. The file is named after your lesson title.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>✏️ Edit Layout</h2>
+      <p>Open <strong>⋯ → Edit Layout</strong> to customise the form structure:</p>
+      <ul>
+        <li><strong>↑ ↓</strong> — reorder sections (also drag on desktop)</li>
+        <li><strong>Click title/subtitle field</strong> — rename any section</li>
+        <li><strong>👁 / ○</strong> — show or hide a section</li>
+        <li><strong>+ Add Custom Section</strong> — blank section with a notes field</li>
+        <li><strong>Save as Template</strong> — save your layout for reuse</li>
+      </ul>
+      <div class="guide-tip">💡 Tap <strong>✓ Apply Layout</strong> to save and re-render the form.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>🎨 Theme Editor</h2>
+      <p>Open <strong>⋯ → Theme Editor</strong> to personalise the look:</p>
+      <ul>
+        <li><strong>Presets</strong> — 6 ready-made colour schemes</li>
+        <li><strong>Colors</strong> — customise primary, secondary, highlight, background, and body text</li>
+        <li><strong>Fonts</strong> — choose heading and body typefaces independently</li>
+      </ul>
+      <p>Your theme applies to the app, the DOCX export, and the PPTX export. It travels with your <code>.json</code> draft.</p>
+      <div class="guide-tip">💡 Tap <strong>✓ Apply</strong> to save. Closing without applying reverts to the last saved theme.</div>
+    </div>
+
+    <div class="guide-section">
+      <h2>📋 Templates</h2>
+      <p>Open <strong>⋯ → Import → Templates tab</strong>. Built-in templates load instantly. Tap <strong>☁ Load Online Templates</strong> for subject-specific starters (Math, Science, Language Arts, Social Studies).</p>
+      <p>Save your own templates from the Edit Layout screen — they include your layout, section titles, and form data.</p>
+    </div>
+
+    <div class="guide-section">
+      <h2>🤖 AI Assistant</h2>
+      <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-body">Open <strong>⋯ → 🤖 AI Interview Prompt</strong> and copy the prompt.</div></div>
+      <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-body">Paste into Claude, ChatGPT, Gemini, or any AI. Have a natural conversation.</div></div>
+      <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-body">The AI produces a JSON block. Copy it.</div></div>
+      <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-body">Open <strong>⋯ → Import → Paste JSON</strong> and click Import.</div></div>
+      <div class="guide-tip">💡 Review imported content carefully — treat it as a first draft.</div>
+    </div>
+
+  </div>
+
 </div>
 
 <script>
@@ -3343,6 +2796,408 @@ function _themeDocxColors() {
   };
 }
 
+
+// ══════════════════════════════════════════════════════════════════════════════
+// LESSONCRAFT v4.0 — PPTX EXPORT ENGINE
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── PPTX Themes ──────────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// LESSONCRAFT v4.0 — PPTX EXPORT ENGINE
+// ══════════════════════════════════════════════════════════════════════════════
+
+var PPTX_THEMES = [
+  { id:'classic',  name:'Classic Blue',    DARK:'1F3864', MID:'2E5F8A', ACC:'C49A28', BG:'F5F7FB', TEXT:'1A2233' },
+  { id:'forest',   name:'Forest Green',    DARK:'1B4332', MID:'2D6A4F', ACC:'D4A017', BG:'F4F8F5', TEXT:'1A2A1A' },
+  { id:'slate',    name:'Slate',           DARK:'2D3748', MID:'4A5568', ACC:'E6B012', BG:'F7F8FA', TEXT:'1A202C' },
+  { id:'burgundy', name:'Burgundy',        DARK:'6B1A2A', MID:'8B2A3A', ACC:'D4A017', BG:'FBF5F6', TEXT:'1A0A0C' },
+  { id:'midnight', name:'Midnight',        DARK:'0F172A', MID:'1E293B', ACC:'F59E0B', BG:'F8FAFC', TEXT:'0F172A' },
+  { id:'lesson',   name:'Match App Theme', DARK:null,     MID:null,     ACC:null,     BG:null,     TEXT:null     }
+];
+
+var PPTX_LAYOUTS = [
+  { id:'ontario', name:'Ontario Classic', desc:'Navy header, gold accents. Matches DOCX export.' },
+  { id:'modern',  name:'Modern Clean',    desc:'White background, minimal. Great for projection.' },
+  { id:'bold',    name:'Bold Visual',     desc:'Dark background, high contrast. Stands out in bright rooms.' },
+  { id:'soft',    name:'Soft Pastel',     desc:'Light colours, friendly. Good for younger grades.' }
+];
+
+var _pptxSlides = [];
+var _pptxLayout = 'ontario';
+var _pptxTheme  = 'classic';
+var _PptxGen    = null;
+
+function _buildPptxSlideList() {
+  var acts = typeof getActivities === 'function' ? getActivities() : [];
+  var slides = [
+    { id:'title',        label:'Title Slide',        icon:'\uD83C\uDF93', on:true  },
+    { id:'goals',        label:'Learning Goals',      icon:'\uD83C\uDFAF', on:true  },
+    { id:'criteria',     label:'Success Criteria',    icon:'\u2705',        on:true  },
+    { id:'mindson',      label:'Minds On',            icon:'\uD83D\uDCA1', on:true  }
+  ];
+  acts.forEach(function(act, i) {
+    var lbl = 'Activity ' + (i+1) + (act.title ? ' — ' + act.title.slice(0,28) : '');
+    slides.push({ id:'act_'+i, label:lbl, icon:'\u26A1', on:true });
+  });
+  slides.push(
+    { id:'consolidation', label:'Consolidation',       icon:'\uD83D\uDD17', on:true  },
+    { id:'extension',     label:'Extension',            icon:'\uD83D\uDE80', on:false },
+    { id:'assessment',    label:'Assessment Summary',   icon:'\uD83D\uDCDD', on:false }
+  );
+  return slides;
+}
+
+function openPptxDialog() {
+  _pptxSlides = _buildPptxSlideList();
+  _renderPptxSlides();
+  _renderPptxLayouts();
+  _renderPptxThemes();
+  _updatePptxPreview();
+  document.getElementById('pptxOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePptxDialog() {
+  document.getElementById('pptxOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function pptxTab(n) {
+  [0,1,2].forEach(function(i) {
+    document.getElementById('ptTab'+i).classList.toggle('active', i===n);
+    document.getElementById('ptBody'+i).style.display = i===n ? '' : 'none';
+  });
+}
+
+function pptxToggleAll(on) {
+  _pptxSlides.forEach(function(s) { s.on = on; });
+  _renderPptxSlides();
+}
+
+function pptxToggle(i) {
+  _pptxSlides[i].on = !_pptxSlides[i].on;
+  _renderPptxSlides();
+}
+
+function _renderPptxSlides() {
+  var list = document.getElementById('ptSlideList');
+  if (!list) return;
+  list.innerHTML = '';
+  _pptxSlides.forEach(function(s, i) {
+    var row = document.createElement('div');
+    row.className = 'pptx-slide-row';
+    row.innerHTML =
+      '<div class="pptx-slide-icon" style="background:var(--light)">' + s.icon + '</div>' +
+      '<span class="pptx-slide-label">' + s.label + '</span>' +
+      '<button class="pptx-slide-toggle ' + (s.on?'on':'off') + '" data-idx="' + i + '"></button>';
+    list.appendChild(row);
+  });
+  list.querySelectorAll('.pptx-slide-toggle').forEach(function(btn) {
+    btn.addEventListener('click', function() { pptxToggle(parseInt(btn.getAttribute('data-idx'))); });
+  });
+}
+
+function _renderPptxLayouts() {
+  var grid = document.getElementById('ptLayoutGrid');
+  if (!grid) return;
+  var previews = {
+    ontario: { bg:'1F3864', label:'ONTARIO CLASSIC', labelColor:'C49A28' },
+    modern:  { bg:'FFFFFF', label:'MODERN CLEAN',    labelColor:'1A2233', border:true },
+    bold:    { bg:'0F172A', label:'BOLD VISUAL',     labelColor:'F59E0B' },
+    soft:    { bg:'EEF4FF', label:'SOFT PASTEL',     labelColor:'3B4F8A', border:true }
+  };
+  grid.innerHTML = '';
+  PPTX_LAYOUTS.forEach(function(l) {
+    var p = previews[l.id];
+    var card = document.createElement('div');
+    card.className = 'pptx-layout-card' + (l.id===_pptxLayout?' active':'');
+    card.setAttribute('data-lid', l.id);
+    var previewStyle = 'background:#' + p.bg + ';height:40px;border-radius:6px;margin-bottom:8px;display:flex;align-items:center;padding:0 8px;' + (p.border?'border:1px solid #e0e0e0;':'');
+    card.innerHTML =
+      '<div style="' + previewStyle + '"><span style="color:#' + p.labelColor + ';font-weight:700;font-size:10px;font-family:Georgia,serif">' + p.label + '</span></div>' +
+      '<div class="pptx-layout-name">' + l.name + '</div>' +
+      '<div class="pptx-layout-desc">' + l.desc + '</div>';
+    card.addEventListener('click', function() { selectPptxLayout(l.id); });
+    grid.appendChild(card);
+  });
+}
+
+function selectPptxLayout(id) {
+  _pptxLayout = id;
+  _renderPptxLayouts();
+  _updatePptxPreview();
+}
+
+function _renderPptxThemes() {
+  var grid = document.getElementById('ptThemeGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  PPTX_THEMES.forEach(function(t) {
+    var dark = t.DARK || (_currentTheme && _currentTheme.navy  ? _currentTheme.navy.replace('#','')  : '1F3864');
+    var mid  = t.MID  || (_currentTheme && _currentTheme.steel ? _currentTheme.steel.replace('#','') : '2E5F8A');
+    var acc  = t.ACC  || (_currentTheme && _currentTheme.gold  ? _currentTheme.gold.replace('#','')  : 'C49A28');
+    var sw = document.createElement('div');
+    sw.className = 'pptx-theme-swatch' + (t.id===_pptxTheme?' active':'');
+    sw.setAttribute('data-tid', t.id);
+    sw.innerHTML =
+      '<div class="pptx-theme-dots">' +
+        '<div class="pptx-theme-dot" style="background:#'+dark+'"></div>' +
+        '<div class="pptx-theme-dot" style="background:#'+mid+'"></div>' +
+        '<div class="pptx-theme-dot" style="background:#'+acc+'"></div>' +
+      '</div>' +
+      '<div class="pptx-theme-name">' + t.name + '</div>';
+    sw.addEventListener('click', function() { selectPptxTheme(t.id); });
+    grid.appendChild(sw);
+  });
+}
+
+function selectPptxTheme(id) {
+  _pptxTheme = id;
+  _renderPptxThemes();
+  _updatePptxPreview();
+}
+
+function _pptxColors() {
+  var t = PPTX_THEMES.find(function(x) { return x.id === _pptxTheme; }) || PPTX_THEMES[0];
+  return {
+    dark: t.DARK || (_currentTheme && _currentTheme.navy  ? _currentTheme.navy.replace('#','')  : '1F3864'),
+    mid:  t.MID  || (_currentTheme && _currentTheme.steel ? _currentTheme.steel.replace('#','') : '2E5F8A'),
+    acc:  t.ACC  || (_currentTheme && _currentTheme.gold  ? _currentTheme.gold.replace('#','')  : 'C49A28'),
+    bg:   t.BG   || (_currentTheme && _currentTheme.bg    ? _currentTheme.bg.replace('#','')    : 'F5F7FB'),
+    text: t.TEXT || (_currentTheme && _currentTheme.ink   ? _currentTheme.ink.replace('#','')   : '1A2233')
+  };
+}
+
+function generatePptx() {
+  _PptxGen = (typeof PptxGenJS !== 'undefined') ? PptxGenJS : (typeof pptxgen !== 'undefined' ? pptxgen : null);
+  if (!_PptxGen) { toast('Presentation library loading — wait a moment and try again'); return; }
+  var selected = _pptxSlides.filter(function(s) { return s.on; });
+  if (!selected.length) { toast('Select at least one slide'); return; }
+  var btn = document.getElementById('ptGenerateBtn');
+  btn.textContent = 'Generating…'; btn.disabled = true;
+  setTimeout(function() {
+    try { _doBuildPptx(selected); }
+    catch(e) { toast('Export failed: ' + e.message); console.error(e); }
+    finally { btn.textContent = '\uD83D\uDCCA Generate PPTX'; btn.disabled = false; }
+  }, 50);
+}
+
+function _doBuildPptx(selected) {
+  if (!_PptxGen) { toast('Library not loaded'); return; }
+  var pres = new _PptxGen();
+  pres.layout = 'LAYOUT_16x9';
+  var C = _pptxColors();
+  var d = collectDraft();
+  var acts = typeof getActivities === 'function' ? getActivities() : [];
+  var layout = _pptxLayout;
+  var W = 10, H = 5.625;
+
+  function gv(key) { return (d[key] || '').trim(); }
+  function ga(key) {
+    var val = d[key];
+    if (Array.isArray(val)) return val.filter(function(x){return x && x.trim();});
+    if (typeof val === 'string' && val.trim()) return val.split('\n').map(function(s){return s.trim();}).filter(Boolean);
+    return [];
+  }
+
+  function applyBg(slide) {
+    slide.background = { color: layout === 'bold' ? C.dark : (layout === 'soft' ? 'EEF4FF' : C.bg) };
+  }
+
+  function addHeaderBar(slide, title) {
+    slide.addShape(pres.ShapeType.rect, { x:0, y:0, w:W, h:1.0, fill:{color: layout==='bold' ? C.mid : C.dark} });
+    slide.addText(title.slice(0,60), { x:0.4, y:0, w:W-0.8, h:1.0, fontSize:22, bold:true,
+      color:'FFFFFF', fontFace:'Georgia', valign:'middle', margin:0 });
+  }
+
+  function addAccent(slide, x, y, h) {
+    slide.addShape(pres.ShapeType.rect, { x:x, y:y, w:0.06, h:h, fill:{color:C.acc} });
+  }
+
+  function tc()  { return layout === 'bold' ? 'FFFFFF' : C.text; }
+  function mc()  { return layout === 'bold' ? 'AABBCC' : '6B7A96'; }
+
+  function makeBullets(items) {
+    return items.map(function(item, i) {
+      return { text:item, options:{bullet:true, color:tc(), fontSize:14, fontFace:'Calibri',
+        breakLine: i < items.length-1, paraSpaceAfter:4} };
+    });
+  }
+
+  // ── Title ─────────────────────────────────────────────────────────────────
+  function buildTitle() {
+    var slide = pres.addSlide();
+    slide.addShape(pres.ShapeType.rect, { x:0, y:0,        w:W, h:H*0.55, fill:{color:C.dark} });
+    slide.addShape(pres.ShapeType.rect, { x:0, y:H*0.55-0.04, w:W, h:0.04, fill:{color:C.acc} });
+    slide.addShape(pres.ShapeType.rect, { x:0, y:H*0.55,   w:W, h:H*0.45, fill:{color:C.bg || 'F5F7FB'} });
+    slide.addText(gv('lessonTitle') || 'Lesson Plan', { x:0.6, y:0.5, w:W-1.2, h:1.8,
+      fontSize:34, bold:true, color:'FFFFFF', fontFace:'Georgia', valign:'middle', wrap:true });
+    if (gv('gradeSubject'))
+      slide.addText(gv('gradeSubject'), { x:0.6, y:2.05, w:W-1.2, h:0.5,
+        fontSize:15, color:C.acc, fontFace:'Calibri', bold:true });
+    var meta = [gv('teacherName'), gv('lessonDate')].filter(Boolean).join('  ·  ');
+    if (meta) slide.addText(meta, { x:0.6, y:H*0.60, w:W-1.2, h:0.45,
+      fontSize:13, color:mc(), fontFace:'Calibri' });
+  }
+
+  // ── Goals ─────────────────────────────────────────────────────────────────
+  function buildGoals() {
+    var slide = pres.addSlide(); applyBg(slide); addHeaderBar(slide, 'Learning Goals');
+    var items = ga('learningGoals'); if (!items.length) items = ['We are learning to…'];
+    addAccent(slide, 0.4, 1.2, H-1.65);
+    slide.addText('We are learning to…', { x:0.65, y:1.2, w:W-1.1, h:0.32,
+      fontSize:11, color:mc(), fontFace:'Calibri', italic:true });
+    slide.addText(makeBullets(items), { x:0.65, y:1.55, w:W-1.1, h:H-2.1 });
+  }
+
+  // ── Criteria ──────────────────────────────────────────────────────────────
+  function buildCriteria() {
+    var slide = pres.addSlide(); applyBg(slide); addHeaderBar(slide, 'Success Criteria');
+    var items = ga('successCriteria'); if (!items.length) items = ['I can…'];
+    addAccent(slide, 0.4, 1.2, H-1.65);
+    slide.addText('I can…', { x:0.65, y:1.2, w:W-1.1, h:0.32,
+      fontSize:11, color:mc(), fontFace:'Calibri', italic:true });
+    slide.addText(makeBullets(items), { x:0.65, y:1.55, w:W-1.1, h:H-2.1 });
+  }
+
+  // ── Minds On ──────────────────────────────────────────────────────────────
+  function buildMindsOn() {
+    var slide = pres.addSlide(); applyBg(slide);
+    addHeaderBar(slide, 'Minds On — ' + (gv('mindsOnTitle') || 'Hook Activity'));
+    var desc = gv('mindsOnDesc'); var qs = ga('mindsOnQs'); var y = 1.2;
+    if (desc) { slide.addText(desc, { x:0.5, y:y, w:W-1.0, h:1.5, fontSize:14,
+      color:tc(), fontFace:'Calibri', wrap:true }); y += 1.6; }
+    if (qs.length) {
+      slide.addText('Critical Thinking Questions', { x:0.5, y:y, w:W-1.0, h:0.32,
+        fontSize:11, bold:true, color:C.acc, fontFace:'Calibri' });
+      slide.addText(makeBullets(qs), { x:0.5, y:y+0.35, w:W-1.0, h:H-y-0.8 });
+    }
+  }
+
+  // ── Activity ──────────────────────────────────────────────────────────────
+  function buildActivity(act, num) {
+    var slide = pres.addSlide(); applyBg(slide);
+    addHeaderBar(slide, 'Activity ' + num + (act.title ? ' — ' + act.title.slice(0,40) : ''));
+    var desc = act.desc || ''; var qs = act.questions || []; var y = 1.2;
+    if (desc) { slide.addText(desc, { x:0.5, y:y, w:W-1.0, h:1.7, fontSize:14,
+      color:tc(), fontFace:'Calibri', wrap:true }); y += 1.8; }
+    if (qs.length) {
+      slide.addText('Critical Thinking', { x:0.5, y:y, w:W-1.0, h:0.32,
+        fontSize:11, bold:true, color:C.acc, fontFace:'Calibri' });
+      slide.addText(makeBullets(qs), { x:0.5, y:y+0.35, w:W-1.0, h:H-y-0.8 });
+    }
+  }
+
+  // ── Consolidation ─────────────────────────────────────────────────────────
+  function buildConsolidation() {
+    var slide = pres.addSlide(); applyBg(slide);
+    addHeaderBar(slide, 'Consolidation — ' + (gv('consolidationTitle') || 'Reflect & Connect'));
+    var desc = gv('consolidationDesc'); var qs = ga('consolidationQs'); var ext = gv('extension');
+    var y = 1.2;
+    if (desc) { slide.addText(desc, { x:0.5, y:y, w:W-1.0, h:1.3, fontSize:14,
+      color:tc(), fontFace:'Calibri', wrap:true }); y += 1.4; }
+    if (qs.length) { slide.addText(makeBullets(qs), { x:0.5, y:y, w:W-1.0, h:H-y-1.0 }); }
+    if (ext) {
+      slide.addShape(pres.ShapeType.rect, { x:0.4, y:H-0.9, w:W-0.8, h:0.55, fill:{color:C.acc},
+        shadow:{type:'outer',blur:4,offset:2,angle:135,color:'000000',opacity:0.15} });
+      slide.addText('Extension: ' + ext.slice(0,80), { x:0.5, y:H-0.9, w:W-1.0, h:0.55,
+        fontSize:11, color:'FFFFFF', fontFace:'Calibri', valign:'middle', margin:0 });
+    }
+  }
+
+  // ── Extension ─────────────────────────────────────────────────────────────
+  function buildExtension() {
+    var slide = pres.addSlide(); applyBg(slide);
+    addHeaderBar(slide, 'Extension — Early Finishers');
+    slide.addText(gv('extension') || 'Extension activity…', { x:0.5, y:1.2, w:W-1.0, h:H-1.8,
+      fontSize:16, color:tc(), fontFace:'Calibri', wrap:true });
+  }
+
+  // ── Assessment ────────────────────────────────────────────────────────────
+  function buildAssessment() {
+    var slide = pres.addSlide(); applyBg(slide); addHeaderBar(slide, 'Assessment');
+    var rows = [
+      {label:'Diagnostic',  val:gv('assessDiagnostic')},
+      {label:'Formative',   val:gv('assessFormative')},
+      {label:'Self-Assess', val:gv('assessAs')},
+      {label:'Summative',   val:gv('assessOf')}
+    ].filter(function(r){return r.val;});
+    if (!rows.length) { slide.addText('No assessment data entered.', { x:0.5, y:1.5, w:W-1, h:1,
+      fontSize:14, color:mc(), fontFace:'Calibri' }); return; }
+    var y = 1.15; var rowH = (H-y-0.2)/rows.length;
+    rows.forEach(function(row) {
+      slide.addShape(pres.ShapeType.rect, { x:0.4, y:y, w:1.5, h:rowH-0.1, fill:{color:C.mid} });
+      slide.addText(row.label, { x:0.4, y:y, w:1.5, h:rowH-0.1,
+        fontSize:10, bold:true, color:'FFFFFF', fontFace:'Calibri', align:'center', valign:'middle', margin:0 });
+      slide.addText(row.val.slice(0,120), { x:2.1, y:y, w:W-2.5, h:rowH-0.1,
+        fontSize:12, color:tc(), fontFace:'Calibri', valign:'middle', wrap:true });
+      y += rowH;
+    });
+  }
+
+  // ── Dispatch ──────────────────────────────────────────────────────────────
+  selected.forEach(function(s) {
+    if      (s.id === 'title')        buildTitle();
+    else if (s.id === 'goals')        buildGoals();
+    else if (s.id === 'criteria')     buildCriteria();
+    else if (s.id === 'mindson')      buildMindsOn();
+    else if (s.id.startsWith('act_')) { var i=parseInt(s.id.split('_')[1]); if(acts[i]) buildActivity(acts[i], i+1); }
+    else if (s.id === 'consolidation') buildConsolidation();
+    else if (s.id === 'extension')     buildExtension();
+    else if (s.id === 'assessment')    buildAssessment();
+  });
+
+  var fname = (gv('lessonTitle')||'Lesson_Plan').replace(/[^a-z0-9_\-]/gi,'_').slice(0,40)+'.pptx';
+  pres.writeFile({ fileName: fname });
+  closePptxDialog();
+  toast('\u2713 Presentation saved: ' + fname);
+}
+
+
+// ── PPTX Mini Preview ────────────────────────────────────────────────────────
+function _updatePptxPreview() {
+  var C = _pptxColors();
+  var layout = _pptxLayout;
+
+  // Determine colors based on layout style
+  var headerBg  = layout === 'bold'   ? '#' + C.dark :
+                  layout === 'soft'   ? '#EEF4FF' :
+                  '#' + C.dark;
+  var headerText = (layout === 'soft') ? '#' + C.text : '#FFFFFF';
+  var bodyBg    = layout === 'bold'   ? '#' + C.mid  :
+                  layout === 'soft'   ? '#F5F8FF' :
+                  '#' + C.bg;
+  var barColor1 = '#' + C.acc;
+  var barColor2 = layout === 'bold' ? 'rgba(255,255,255,0.2)' : '#' + C.mid;
+
+  // Update theme preview
+  var th = document.getElementById('ptPreviewHeader');
+  var tb = document.getElementById('ptPreviewBody');
+  var tt = document.getElementById('ptPreviewTitle');
+  if (th) { th.style.background = headerBg; }
+  if (tt) { tt.style.color = headerText; }
+  if (tb) { tb.style.background = bodyBg; }
+  var b1 = document.getElementById('ptPreviewBar1');
+  var b2 = document.getElementById('ptPreviewBar2');
+  var b3 = document.getElementById('ptPreviewBar3');
+  if (b1) b1.style.background = barColor1;
+  if (b2) b2.style.background = barColor2;
+  if (b3) b3.style.background = barColor2;
+
+  // Update layout preview
+  var lh = document.getElementById('ptLPreviewHeader');
+  var lb = document.getElementById('ptLPreviewBody');
+  var lt = document.getElementById('ptLPreviewTitle');
+  if (lh) { lh.style.background = headerBg; }
+  if (lt) { lt.style.color = headerText; }
+  if (lb) { lb.style.background = bodyBg; }
+  var lb1 = document.getElementById('ptLPreviewBar1');
+  var lb2 = document.getElementById('ptLPreviewBar2');
+  if (lb1) lb1.style.background = barColor1;
+  if (lb2) lb2.style.background = barColor2;
+}
+
 </script>
 <script>
 if ('serviceWorker' in navigator) {
@@ -3480,6 +3335,80 @@ if ('serviceWorker' in navigator) {
       <button class="wt-btn-skip" onclick="wtSkip()">Skip</button>
       <button class="wt-btn-next" id="wtNextBtn" onclick="wtNext()">Next →</button>
     </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     PPTX EXPORT DIALOG  v4.0
+══════════════════════════════════════════════════════════════ -->
+<div id="pptxOverlay">
+  <div class="pptx-box">
+
+    <div class="pptx-header">
+      <div style="flex:1">
+        <div class="pptx-header-title">📊 Export Presentation</div>
+        <div style="font-size:11px;color:#7A9CC8;margin-top:1px">Choose slides, layout, and theme</div>
+      </div>
+      <button onclick="closePptxDialog()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;-webkit-tap-highlight-color:transparent">✕</button>
+    </div>
+
+    <div class="pptx-tabs">
+      <button class="pptx-tab active" id="ptTab0" onclick="pptxTab(0)">📋 Slides</button>
+      <button class="pptx-tab"        id="ptTab1" onclick="pptxTab(1)">🖼 Layout</button>
+      <button class="pptx-tab"        id="ptTab2" onclick="pptxTab(2)">🎨 Theme</button>
+    </div>
+
+    <!-- TAB 0: SLIDES -->
+    <div class="pptx-body" id="ptBody0">
+      <div class="pptx-section-title">Select slides to include</div>
+      <div id="ptSlideList"></div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button onclick="pptxToggleAll(true)"  class="btn btn-secondary" style="flex:1;justify-content:center;font-size:12px">Select All</button>
+        <button onclick="pptxToggleAll(false)" class="btn btn-secondary" style="flex:1;justify-content:center;font-size:12px">Deselect All</button>
+      </div>
+    </div>
+
+    <!-- TAB 1: LAYOUT -->
+    <div class="pptx-body" id="ptBody1" style="display:none">
+      <div class="pptx-section-title">Choose a slide layout</div>
+      <div class="pptx-layout-grid" id="ptLayoutGrid"></div>
+      <div class="pptx-mini-preview" id="ptLayoutPreview" style="margin-top:14px">
+        <div class="pptx-mini-preview-inner" id="ptLayoutPreviewInner">
+          <div class="pptx-mini-header" id="ptLPreviewHeader">
+            <span class="pptx-mini-title" id="ptLPreviewTitle">Lesson Title</span>
+          </div>
+          <div class="pptx-mini-body" id="ptLPreviewBody">
+            <div class="pptx-mini-bar pptx-mini-bar-long"  id="ptLPreviewBar1"></div>
+            <div class="pptx-mini-bar pptx-mini-bar-short" id="ptLPreviewBar2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: THEME -->
+    <div class="pptx-body" id="ptBody2" style="display:none">
+      <div class="pptx-section-title">Choose a colour theme</div>
+      <div class="pptx-theme-grid" id="ptThemeGrid"></div>
+      <div class="pptx-mini-preview" id="ptThemePreview">
+        <div class="pptx-mini-preview-inner" id="ptThemePreviewInner">
+          <div class="pptx-mini-header" id="ptPreviewHeader">
+            <span class="pptx-mini-title" id="ptPreviewTitle">Lesson Title</span>
+          </div>
+          <div class="pptx-mini-body" id="ptPreviewBody">
+            <div class="pptx-mini-bar pptx-mini-bar-long"  id="ptPreviewBar1"></div>
+            <div class="pptx-mini-bar pptx-mini-bar-short" id="ptPreviewBar2"></div>
+            <div class="pptx-mini-bar pptx-mini-bar-long"  id="ptPreviewBar3"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pptx-footer">
+      <button onclick="closePptxDialog()" class="btn btn-secondary" style="font-size:13px">Cancel</button>
+      <button onclick="generatePptx()" class="btn btn-primary" style="flex:1;justify-content:center;font-size:13px" id="ptGenerateBtn">📊 Generate PPTX</button>
+    </div>
+
   </div>
 </div>
 
