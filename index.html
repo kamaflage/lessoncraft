@@ -1377,83 +1377,144 @@ function closeGuide() {
 // ─────────────────────────────────────────────
 //  AI PROMPT
 // ─────────────────────────────────────────────
-var LLM_PROMPT = [
-  'You are a warm, encouraging assistant helping an Ontario teacher build a lesson plan.',
-  'Your goal is a friendly, natural conversation — not an interrogation.',
-  'Ask one or two questions at a time. If the teacher is unsure, offer suggestions or skip it.',
-  'Reassure them there are no wrong answers.',
-  '',
-  'Once you have enough information, produce the JSON object below.',
-  'Tell the teacher to copy the JSON and paste it into the LessonCraft',
-  'using the ⋯ menu → Import Draft → Paste JSON tab.',
-  '',
-  'Start by introducing yourself warmly and asking what lesson they are working on today.',
-  '',
-  '─── JSON FORMAT (output exactly this structure) ───',
-  '{',
-  '  "teacherName": "",',
-  '  "lessonDate": "YYYY-MM-DD",',
-  '  "duration": "",',
-  '  "gradeSubject": "",',
-  '  "strand": "",',
-  '  "lessonTitle": "",',
-  '  "overallExp": [""],',
-  '  "specificExp": [""],',
-  '  "learningGoals": [""],',
-  '  "successCriteria": [""],',
-  '  "achKnowledge": "",',
-  '  "achThinking": "",',
-  '  "achCommunication": "",',
-  '  "achApplication": "",',
-  '  "assessDiagnostic": "",',
-  '  "assessFormative": "",',
-  '  "assessAs": "",',
-  '  "assessOf": "",',
-  '  "strategies": [""],',
-  '  "assessTools": [""],',
-  '  "priorLearning": "",',
-  '  "differentiation": "",',
-  '  "technology": "",',
-  '  "resources": [""],',
-  '  "mindsOnTitle": "",',
-  '  "mindsOnDesc": "",',
-  '  "mindsOnQs": [""],',
-  '  "consolidationTitle": "",',
-  '  "consolidationDesc": "",',
-  '  "consolidationQs": [""],',
-  '  "skillCollab_chk": false,',
-  '  "skillCollabItems": [""],',
-  '  "skillResponsibility_chk": false,',
-  '  "skillRespItems": [""],',
-  '  "skillSelfReg_chk": false,',
-  '  "skillSelfRegItems": [""],',
-  '  "skillIndep_chk": false,',
-  '  "skillIndepItems": [""],',
-  '  "skillInit_chk": false,',
-  '  "skillInitItems": [""],',
-  '  "skillOrg_chk": false,',
-  '  "skillOrgItems": [""]',
-  '}',
-  '',
-  'Notes:',
-  '• Arrays accept multiple strings. Leave fields as "" if not discussed.',
-  '• lessonDate must be YYYY-MM-DD format.',
-  '• _chk fields: true only if that learning skill is relevant to this lesson.'
-].join('\n');
+
+// ── Section → fields map ─────────────────────────────────────────────────────
+var LC_SECTION_FIELDS = {
+  s1: { fields: ['teacherName','lessonDate','duration','gradeSubject','strand','lessonTitle'],
+        labels: { teacherName:'Teacher Name', lessonDate:'Date (YYYY-MM-DD)', duration:'Duration',
+                  gradeSubject:'Grade & Subject', strand:'Curriculum Strand', lessonTitle:'Lesson Title' } },
+  s2: { fields: ['overallExp','specificExp'],
+        labels: { overallExp:'Overall Expectations (array)', specificExp:'Specific Expectations (array)' } },
+  s3: { fields: ['learningGoals','successCriteria'],
+        labels: { learningGoals:'Learning Goals (array)', successCriteria:'Success Criteria (array)' } },
+  s4: { fields: ['achKnowledge','achThinking','achCommunication','achApplication'],
+        labels: { achKnowledge:'Knowledge & Understanding', achThinking:'Thinking',
+                  achCommunication:'Communication', achApplication:'Application' } },
+  s5: { fields: ['assessDiagnostic','assessFormative','assessAs','assessOf','strategies','assessTools'],
+        labels: { assessDiagnostic:'Diagnostic Assessment', assessFormative:'Formative Assessment',
+                  assessAs:'Assessment as Learning', assessOf:'Summative Assessment',
+                  strategies:'Instructional Strategies (array)', assessTools:'Assessment Tools (array)' } },
+  s6: { fields: ['priorLearning','differentiation','technology','resources'],
+        labels: { priorLearning:'Prior Learning', differentiation:'Differentiation / IEP / ELL',
+                  technology:'Technology', resources:'Resources (array)' } },
+  s7: { fields: ['mindsOnTitle','mindsOnDesc','mindsOnQs','activities','consolidationTitle','consolidationDesc','consolidationQs','extension'],
+        labels: { mindsOnTitle:'Minds On Title & Time', mindsOnDesc:'Minds On Description',
+                  mindsOnQs:'Minds On Critical Thinking Questions (array)',
+                  activities:'Activities — array of {title, grouping, desc, questions:[]} — one per activity',
+                  consolidationTitle:'Consolidation Title & Time', consolidationDesc:'Consolidation Description',
+                  consolidationQs:'Consolidation Reflection Questions (array)',
+                  extension:'Extension / Early Finishers activity' } },
+  s8: { fields: ['skillCollab_chk','skillCollabItems','skillResponsibility_chk','skillRespItems',
+                 'skillSelfReg_chk','skillSelfRegItems','skillIndep_chk','skillIndepItems',
+                 'skillInit_chk','skillInitItems','skillOrg_chk','skillOrgItems'],
+        labels: { skillCollab_chk:'Collaboration (true/false)', skillCollabItems:'Collaboration criteria (array)',
+                  skillResponsibility_chk:'Responsibility (true/false)', skillRespItems:'Responsibility criteria (array)',
+                  skillSelfReg_chk:'Self-Regulation (true/false)', skillSelfRegItems:'Self-Regulation criteria (array)',
+                  skillIndep_chk:'Independent Work (true/false)', skillIndepItems:'Independent Work criteria (array)',
+                  skillInit_chk:'Initiative (true/false)', skillInitItems:'Initiative criteria (array)',
+                  skillOrg_chk:'Organization (true/false)', skillOrgItems:'Organization criteria (array)' } }
+};
+
+function _buildDynamicPrompt() {
+  var layout = typeof _layout !== 'undefined' ? _layout : null;
+  var visibleSections = layout
+    ? layout.filter(function(s) { return s.visible; })
+    : [];
+
+  // Build section summary for the AI instructions
+  var sectionList = visibleSections.map(function(s, i) {
+    return (i+1) + '. ' + s.title + (s.subtitle ? ' — ' + s.subtitle : '');
+  }).join('\n');
+
+  // Build JSON template — only include fields for visible sections
+  var jsonFields = [];
+  visibleSections.forEach(function(sec) {
+    if (sec.custom) {
+      // Custom section — single notes field
+      jsonFields.push('  "custom_' + sec.id + '": ""  // ' + sec.title);
+      return;
+    }
+    var sf = LC_SECTION_FIELDS[sec.id];
+    if (!sf) return;
+    sf.fields.forEach(function(field) {
+      var label = sf.labels[field] || field;
+      var isArray = label.indexOf('array') > -1 || label.indexOf('Array') > -1;
+      var isBool  = label.indexOf('true/false') > -1;
+      var isActivities = field === 'activities';
+      if (isActivities) {
+        jsonFields.push('  "activities": [{"title": "", "grouping": "", "desc": "", "questions": [""]}]  // one object per activity');
+      } else if (isArray) {
+        jsonFields.push('  "' + field + '": [""]  // ' + label);
+      } else if (isBool) {
+        jsonFields.push('  "' + field + '": false  // ' + label);
+      } else {
+        jsonFields.push('  "' + field + '": ""  // ' + label);
+      }
+    });
+  });
+
+  var hasActivities = visibleSections.some(function(s) { return s.id === 's7'; });
+  var activityNote = hasActivities
+    ? '\n• For the "activities" array, create one object per Action phase activity with: title (name + time), grouping (whole class / small groups / pairs / individual), desc (full description), and questions (critical thinking questions array).'
+    : '';
+
+  var customNote = visibleSections.some(function(s) { return s.custom; })
+    ? '\n• Custom sections only need a single text value.'
+    : '';
+
+  var sectionCount = visibleSections.length;
+  var lessonTitle = (function() {
+    try { return document.getElementById('lessonTitle') ? document.getElementById('lessonTitle').value.trim() : ''; } catch(e) { return ''; }
+  })();
+
+  var prompt = [
+    'You are a warm, encouraging assistant helping an Ontario teacher build a lesson plan.',
+    'Your goal is a friendly, natural conversation — not an interrogation.',
+    'Ask one or two questions at a time. If the teacher is unsure, offer suggestions or skip it.',
+    'Reassure them there are no wrong answers.',
+    '',
+    'This teacher is using a customised lesson plan template with ' + sectionCount + ' section' + (sectionCount !== 1 ? 's' : '') + ':',
+    sectionList,
+    '',
+    'Only ask about and fill in the sections listed above.',
+    'Do not ask about sections that are not in this list.',
+    (lessonTitle ? 'The teacher is working on: "' + lessonTitle + '"' : ''),
+    '',
+    'Once you have enough information, produce the JSON object below.',
+    'Tell the teacher to copy the JSON and paste it into LessonCraft',
+    'using the ⋯ menu → Import → Paste JSON tab.',
+    '',
+    'Start by introducing yourself warmly and asking what lesson they are working on today.',
+    '',
+    '─── JSON FORMAT (output exactly this structure, only include fields listed) ───',
+    '{',
+    jsonFields.join(',\n'),
+    '}',
+    '',
+    'Notes:',
+    '• Arrays accept multiple strings. Leave fields as "" if not discussed.',
+    '• lessonDate must be YYYY-MM-DD format.',
+    '• _chk fields: true only if that learning skill is relevant to this lesson.' + activityNote + customNote
+  ].filter(function(l) { return l !== undefined; }).join('\n');
+
+  return prompt;
+}
 
 function openPromptDialog() {
-  document.getElementById('promptBox').textContent = LLM_PROMPT;
+  var prompt = _buildDynamicPrompt();
+  document.getElementById('promptBox').textContent = prompt;
   document.getElementById('promptDialog').classList.add('open');
 }
 function closePromptDialog() {
   document.getElementById('promptDialog').classList.remove('open');
 }
 function copyPrompt() {
+  var prompt = _buildDynamicPrompt();
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(LLM_PROMPT).then(function() { toast('✓ Prompt copied to clipboard'); });
+    navigator.clipboard.writeText(prompt).then(function() { toast('✓ Prompt copied to clipboard'); });
   } else {
     var ta = document.createElement('textarea');
-    ta.value = LLM_PROMPT;
+    ta.value = prompt;
     ta.style.cssText = 'position:fixed;opacity:0';
     document.body.appendChild(ta); ta.select();
     document.execCommand('copy');
